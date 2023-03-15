@@ -148,7 +148,7 @@ create table IF NOT EXISTS operation_type
 
 create table IF NOT EXISTS  FEED_LIST
 (
-    EVENT_ID   BIGINT not null,
+    EVENT_ID   BIGINT not null auto_increment,
     USER_ID    BIGINT not null,
     EVENT_TYPE  ENUM ('LIKE', 'REVIEW', 'FRIEND'),
     OPERATION_TYPE ENUM ('ADD', 'REMOVE', 'UPDATE'),
