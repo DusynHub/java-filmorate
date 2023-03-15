@@ -168,7 +168,7 @@ create unique index IF NOT EXISTS FEED_LIST_ID_UINDEX
 
 create table IF NOT EXISTS  DIRECTOR
 (
-    ID   BIGINT not null,
+    ID   BIGINT not null auto_increment,
     NAME CHARACTER VARYING(250),
     constraint DIRECTOR_PK
         primary key (ID)
