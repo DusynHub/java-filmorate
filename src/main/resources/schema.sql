@@ -122,14 +122,16 @@ create table IF NOT EXISTS REVIEWS
     ID           BIGINT not null,
     FILM_ID      BIGINT not null,
     USER_ID      BIGINT not null,
-    CONTENT      CHARACTER VARYING(250),
-    "isPositive" BOOLEAN,
+    CONTENT      CHARACTER VARYING,
+    IS_POSITIVE  BOOLEAN,
     USEFUL       INTEGER,
-    COLUMN_7     INTEGER,
     constraint REVIEWS_PK
         primary key (ID),
     constraint REVIEWS_FK
-        foreign key (ID) references FILM
+        foreign key (FILM_ID) references FILM
+            on update cascade on delete cascade
+    constraint REVIEWS_FK2
+        foreign key (USER_ID) references USERS
             on update cascade on delete cascade
 );
 
