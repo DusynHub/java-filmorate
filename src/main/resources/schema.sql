@@ -12,7 +12,7 @@ drop table if exists FILM_DIRECTOR cascade;
 
 create table IF NOT EXISTS GENRE
 (
-    ID   BIGINT not null,
+    ID   BIGINT not null auto_increment,
     NAME CHARACTER VARYING(250),
     constraint GENRE_PK
         primary key (ID)
