@@ -129,7 +129,7 @@ create table IF NOT EXISTS REVIEWS
         primary key (ID),
     constraint REVIEWS_FK
         foreign key (FILM_ID) references FILM
-            on update cascade on delete cascade
+            on update cascade on delete cascade,
     constraint REVIEWS_FK2
         foreign key (USER_ID) references USERS
             on update cascade on delete cascade
