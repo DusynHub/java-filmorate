@@ -26,11 +26,11 @@ public class FilmService {
 
 
     public FilmService(@Qualifier("filmStorageDb") FilmStorage filmStorage
-                        , @Qualifier("userStorageDb") UserStorage userStorage
-                        , LikeDao likeDao
-                        , FilmGenreDao filmGenreDao
-                        , GenreDao genreDao
-                        , MpaDao mpaDao) {
+            , @Qualifier("userStorageDb") UserStorage userStorage
+            , LikeDao likeDao
+            , FilmGenreDao filmGenreDao
+            , GenreDao genreDao
+            , MpaDao mpaDao) {
         this.filmStorage = filmStorage;
         this.likeDao = likeDao;
         this.filmGenreDao = filmGenreDao;
@@ -41,7 +41,7 @@ public class FilmService {
 
     public Film addNewFilmToStorage(Film film) {
         filmStorage.addFilm(film);
-        if(film.getGenres() == null || film.getGenres().isEmpty()){
+        if (film.getGenres() == null || film.getGenres().isEmpty()) {
             return film;
         }
         filmGenreDao.insertFilmGenre(film);
@@ -51,7 +51,7 @@ public class FilmService {
     public Film updateFilmInStorage(Film film) {
         filmStorage.updateFilm(film);
         filmGenreDao.deleteAllFilmGenresByFilmId(film.getId());
-        if(film.getGenres() == null || film.getGenres().isEmpty()){
+        if (film.getGenres() == null || film.getGenres().isEmpty()) {
             return film;
         }
         System.out.println(film);
@@ -63,12 +63,12 @@ public class FilmService {
         List<Film> films = filmStorage.getAllFilms();
         List<FilmGenre> filmGenres = filmGenreDao.getAllFilmGenres();
         Map<Long, Genre> genres = genreDao.getAll()
-                                            .stream()
-                                            .collect(Collectors.toMap(Genre::getId, genre -> genre));
+                .stream()
+                .collect(Collectors.toMap(Genre::getId, genre -> genre));
 
         Map<Integer, Mpa> mpaList = mpaDao.getAll()
-                                            .stream()
-                                            .collect(Collectors.toMap(Mpa::getId, thisMpa -> thisMpa));
+                .stream()
+                .collect(Collectors.toMap(Mpa::getId, thisMpa -> thisMpa));
 
 
         Map<Long, List<Genre>> mappedGenres = new HashMap<>();
@@ -81,8 +81,8 @@ public class FilmService {
 
         List<Like> allLikes = likeDao.getAllLikes();
         Map<Long, User> allUsers = userStorage.getAllUsers()
-                                                .stream()
-                                                .collect(Collectors.toMap(User::getId, user -> user));
+                .stream()
+                .collect(Collectors.toMap(User::getId, user -> user));
 
         Map<Long, List<User>> mappedUsers = new HashMap<>();
 
@@ -117,15 +117,15 @@ public class FilmService {
         likeDao.deleteLike(id, userId);
     }
 
-    public List<Film> getMostPopularsFilmsByGenreByYear(int count, Long genreId, Integer year){
+    public List<Film> getMostPopularsFilmsByGenreByYear(int count, Long genreId, Integer year) {
         List<Film> films;
-        if(genreId != null && year != null){
+        if (genreId != null && year != null) {
             films = filmStorage.getMostPopularsFilmsByGenreByYear(count, genreId, year);
             setForFilms(films);
         } else if (genreId == null && year != null) {
             films = filmStorage.getMostPopularsFilmsByYear(count, year);
             setForFilms(films);
-        } else if(year == null && genreId != null) {
+        } else if (year == null && genreId != null) {
             films = filmStorage.getMostPopularsFilmsByGenre(count, genreId);
             setForFilms(films);
         } else {
@@ -135,7 +135,7 @@ public class FilmService {
         return films;
     }
 
-    private void setForFilms(List<Film> films){
+    private void setForFilms(List<Film> films) {
         films.forEach((film) -> {
             film.setLikes(likeDao.getFilmLikes(film.getId()));
             film.setGenres((filmGenreDao.getFilmGenre(film.getId())));
