@@ -117,13 +117,29 @@ public class FilmService {
         likeDao.deleteLike(id, userId);
     }
 
-    public List<Film> getMostLikedFilmsFromStorage(int count) {
-        List<Film> films = filmStorage.getMostLikedFilms(count);
+    public List<Film> getMostPopularsFilmsByGenreByYear(int count, Long genreId, Integer year){
+        List<Film> films;
+        if(genreId != null && year != null){
+            films = filmStorage.getMostPopularsFilmsByGenreByYear(count, genreId, year);
+            setForFilms(films);
+        } else if (genreId == null && year != null) {
+            films = filmStorage.getMostPopularsFilmsByYear(count, year);
+            setForFilms(films);
+        } else if(year == null && genreId != null) {
+            films = filmStorage.getMostPopularsFilmsByGenre(count, genreId);
+            setForFilms(films);
+        } else {
+            films = filmStorage.getMostLikedFilms(count);
+            setForFilms(films);
+        }
+        return films;
+    }
+
+    private void setForFilms(List<Film> films){
         films.forEach((film) -> {
             film.setLikes(likeDao.getFilmLikes(film.getId()));
-            film.setGenres(filmGenreDao.getFilmGenre(film.getId()));
+            film.setGenres((filmGenreDao.getFilmGenre(film.getId())));
             film.setMpa(mpaDao.getMpaById(film.getMpa().getId()));
         });
-        return films;
     }
 }

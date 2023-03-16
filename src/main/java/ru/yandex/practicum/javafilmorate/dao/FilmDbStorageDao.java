@@ -124,5 +124,41 @@ public class FilmDbStorageDao implements FilmStorage {
                 );
         return jdbcTemplate.query(sql, (rs, rowNum) ->  Film.makeFilm(rs));
     }
-}
 
+    @Override
+    public List<Film> getMostPopularsFilmsByGenreByYear(int count, long genreId, int year) {
+        String sql = String.format(
+                "SELECT * " +
+                        "FROM film f " +
+                        "INNER JOIN film_genre fg ON f.id = fg.film_id " +
+                        "INNER JOIN genre g ON fg.genre_id = g.id " +
+                        "WHERE g.id = %d AND EXTRACT(YEAR FROM CAST(release_date AS date)) = %d " +
+                        "LIMIT %d", genreId,year,count
+        );
+        return jdbcTemplate.query(sql, ((rs, rowNum) -> Film.makeFilm(rs)));
+    }
+
+    @Override
+    public  List<Film> getMostPopularsFilmsByGenre(int count, long genreId){
+        String sql = String.format(
+                "SELECT * " +
+                        "FROM film f " +
+                        "INNER JOIN film_genre fg ON f.id = fg.film_id " +
+                        "INNER JOIN genre g ON fg.genre_id = g.id " +
+                        "WHERE g.id = %d " +
+                        "LIMIT %d", genreId,count
+        );
+        return jdbcTemplate.query(sql, ((rs, rowNum) -> Film.makeFilm(rs)));
+    }
+
+    @Override
+    public List<Film> getMostPopularsFilmsByYear(int count, int year) {
+        String sql = String.format(
+                "SELECT * " +
+                        "FROM film f " +
+                        "WHERE EXTRACT(YEAR FROM CAST(release_date AS date)) = %d " +
+                        "LIMIT %d", year,count
+        );
+        return jdbcTemplate.query(sql, ((rs, rowNum) -> Film.makeFilm(rs)));
+    }
+}
