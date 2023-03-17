@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.javafilmorate.exceptions.EntityDoesNotExistException;
 import ru.yandex.practicum.javafilmorate.model.Like;
@@ -19,6 +21,7 @@ import java.util.List;
 public class LikeDao {
 
     private final JdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     public List<User> getFilmLikes(long id){
         String sql =    "SELECT  UF.id, UF.email, UF.login, UF.name, UF.birthday " +
@@ -82,5 +85,29 @@ public class LikeDao {
         long userId = resultSet.getLong("user_id");
 
         return Like.builder().filmId(filmId).userId(userId).build();
+    }
+
+    public List<Like> getUserLikesById(long id){
+        String sql =    "SELECT l.film_id, l.user_id \n" +
+                        "FROM likes l \n" +
+                        "WHERE user_id = ? \n";
+
+        return jdbcTemplate.query(sql, (rs, rowNum) -> makeLike(rs), id);
+    }
+
+    public List<Like> getFirstUserWithSameLikedFilms(List<Long> filmsIdLikedByUser, long id){
+
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("filmsIdLikedByUser", filmsIdLikedByUser);
+        parameters.addValue("ids", id);
+
+        String sql =    "SELECT l.USER_ID, COUNT(L.FILM_ID) AS FILM_ID \n" +
+                        "FROM likes l \n" +
+                        "WHERE L.USER_ID NOT IN (:ids) AND l.FILM_ID IN (:filmsIdLikedByUser) \n" +
+                        "GROUP BY l.USER_ID \n" +
+                        "ORDER BY COUNT(L.FILM_ID) DESC \n" +
+                        "LIMIT 1 \n";
+
+        return namedParameterJdbcTemplate.query(sql,parameters ,(rs, rowNum) -> makeLike(rs));
     }
 }
