@@ -15,8 +15,7 @@ values  (1, 'G'),
 INSERT INTO USERS (email, login, name, birthday)
 VALUES  ('doritos@gmail.com', 'dorito', 'Mark', DATE '2021-12-12'),
         ('pizza@dodo,com','chiken', 'Theodore', DATE '2020-12-12'),
-        ('zavtra@net.net','nofuture', 'Dead', DATE '2019-12-12'),
-        ('User4@net.net','User4', 'U4', DATE '2003-12-12');
+        ('zavtra@net.net','nofuture', 'Dead', DATE '2019-12-12');
 
 INSERT INTO FRIENDSHIP (friend1_id, friend2_id)
 VALUES (1,2),
@@ -26,13 +25,10 @@ VALUES (1,2),
 INSERT INTO FILM (NAME, DESCRIPTION, RELEASE_DATE, DURATION, MPA, LIKES_AMOUNT)
 VALUES  ('Titanic', 'Test description',  DATE '1997-1-27', 90, 1,0),
         ('Titanic2', 'Test description2',  DATE '1997-1-27', 90, 1,0),
-        ('Titanic23', 'Test description23',  DATE '1997-1-27', 90, 1,0),
-        ('Titanic24', 'Test description24',  DATE '1997-1-27', 90, 1,0);
+        ('Titanic23', 'Test description23',  DATE '1997-1-27', 90, 1,0);
 
 INSERT INTO LIKES (FILM_ID, USER_ID)
 VALUES (1,2),
-       (3,2),
-       (1,1),
        (1,3),
        (2,3);
 
