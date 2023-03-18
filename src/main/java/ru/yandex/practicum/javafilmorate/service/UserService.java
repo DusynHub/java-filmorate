@@ -3,6 +3,7 @@ package ru.yandex.practicum.javafilmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.javafilmorate.dao.FriendShipDao;
 import ru.yandex.practicum.javafilmorate.exceptions.EntityDoesNotExistException;
@@ -66,6 +67,8 @@ public class UserService {
     public void addUsersToFriendsInStorage(long id, long friendId) {
         checkIsUserIdNegative(id);
         checkIsUserIdNegative(friendId);
+        userStorage.getUser(id);
+        userStorage.getUser(friendId);
         friendShipDao.addFriends(id, friendId);
     }
 
