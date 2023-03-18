@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.javafilmorate.dao.*;
+import ru.yandex.practicum.javafilmorate.exceptions.EntityDoesNotExistException;
 import ru.yandex.practicum.javafilmorate.model.*;
 import ru.yandex.practicum.javafilmorate.storage.FilmStorage;
 import ru.yandex.practicum.javafilmorate.storage.UserStorage;
@@ -146,6 +147,9 @@ public class FilmService {
     }
 
     public List<Film> getDirectorFilms(long id, String sortBy) {
+        if (directorDao.getDirectorById(id) == null) {
+            throw new EntityDoesNotExistException("Не найден режиссер с id " + id);
+        }
         List<Film> filmList = filmStorage.getDirectorFilms(id, sortBy);
         filmList.forEach((film) -> {
             film.setLikes(likeDao.getFilmLikes(film.getId()));
