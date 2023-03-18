@@ -25,6 +25,7 @@ import java.util.Objects;
 public class FilmDbStorageDao implements FilmStorage {
 
     private final JdbcTemplate jdbcTemplate;
+    private final FilmGenreDao filmGenreDao;
 
     @Override
     public Film addFilm(Film film) {
@@ -98,6 +99,7 @@ public class FilmDbStorageDao implements FilmStorage {
             throw new EntityDoesNotExistException(
                     String.format("Фильм с идентификатором %d не найден.", film.getId()));
         }
+        film.setGenres(filmGenreDao.getFilmGenre(film.getId()));
         return film;
     }
 
