@@ -106,10 +106,16 @@ public class FilmDbStorageDao implements FilmStorage {
 
 
         filmGenreDao.deleteAllFilmGenresByFilmId(film.getId());
-        filmGenreDao.insertFilmGenre(film);
+        if (film.getGenres() != null) {
+            filmGenreDao.insertFilmGenre(film);
+        }
+
 
         filmDirectorDao.deleteAllFilmDirectorsByFilmId(film.getId());
-        filmDirectorDao.insertFilmDirector(film);
+        if (film.getDirectors() != null) {
+            filmDirectorDao.insertFilmDirector(film);
+        }
+
 
         return film;
     }
