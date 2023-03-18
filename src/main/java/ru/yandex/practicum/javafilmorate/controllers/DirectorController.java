@@ -5,6 +5,7 @@ import ru.yandex.practicum.javafilmorate.model.Director;
 import ru.yandex.practicum.javafilmorate.service.DirectorService;
 import ru.yandex.practicum.javafilmorate.service.FilmService;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -29,13 +30,13 @@ public class DirectorController {
     }
 
     @PostMapping
-    public Director createDirector(@RequestBody Director director) {
+    public Director createDirector(@RequestBody @Valid Director director) {
         log.info("Получен запрос POST /directors");
         return directorService.createDirectorInDb(director);
     }
 
     @PutMapping
-    public Director updateDirector(@RequestBody Director director) {
+    public Director updateDirector(@RequestBody @Valid Director director) {
         log.info("Получен запрос PUT /directors");
         return directorService.updateDirectorInDb(director);
     }

@@ -62,7 +62,7 @@ public class FilmDirectorDao {
 
     public FilmDirector makeFilmDirector(ResultSet resultSet) throws SQLException {
         long filmId = resultSet.getLong("film_id");
-        long directorId = resultSet.getLong("directorId");
+        long directorId = resultSet.getLong("director_id");
 
         return FilmDirector.builder().filmId(filmId).directorId(directorId).build();
     }

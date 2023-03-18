@@ -2,6 +2,8 @@ package ru.yandex.practicum.javafilmorate.model;
 
 import lombok.*;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -12,6 +14,8 @@ import java.sql.SQLException;
 @ToString
 public class Director {
     long id;
+    @NotNull
+    @NotBlank
     String name;
 
     public static Director makeDirector(ResultSet rs) throws SQLException {

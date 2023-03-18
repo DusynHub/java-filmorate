@@ -61,14 +61,14 @@ public class FilmService {
         filmStorage.updateFilm(film);
         filmGenreDao.deleteAllFilmGenresByFilmId(film.getId());
         filmDirectorDao.deleteAllFilmDirectorsByFilmId(film.getId());
-        if (film.getGenres() != null || !film.getGenres().isEmpty()) {
+        if (film.getGenres() != null) {
             filmGenreDao.insertFilmGenre(film);
         }
-        if (film.getDirectors() != null || !film.getDirectors().isEmpty()) {
+        if (film.getDirectors() != null) {
             filmDirectorDao.insertFilmDirector(film);
         }
         System.out.println(film);
-        return filmGenreDao.insertFilmGenre(film);
+        return film;
     }
 
     public List<Film> getAllFilmsFromStorage() {
