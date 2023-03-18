@@ -113,9 +113,6 @@ public class UserDbStorageDao implements UserStorage {
 
 
     public List<User> getUserFriends(long id){
-        //проверка существование пользователя
-        getUser(id);
-
         return jdbcTemplate.query("SELECT  UF.id, UF.email, UF.login, UF.name, UF.birthday " +
                 "FROM FRIENDSHIP f " +
                 "LEFT JOIN USERS UF on f.FRIEND2_ID = UF.ID " +
