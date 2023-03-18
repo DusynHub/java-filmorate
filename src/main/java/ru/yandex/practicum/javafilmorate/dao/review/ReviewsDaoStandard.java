@@ -1,10 +1,10 @@
 package ru.yandex.practicum.javafilmorate.dao.review;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.javafilmorate.model.Review;
 
@@ -13,8 +13,16 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Имплементация DAO-интерфейса работы с Review.
+ * Имплементация для работы с базой данных через JDBC.
+ *
+ * @see ReviewsDao
+ * @see Review
+ */
 @Repository
 @RequiredArgsConstructor
+@Slf4j
 public class ReviewsDaoStandard implements ReviewsDao {
 
     private final JdbcTemplate jdbcTemplate;
@@ -23,18 +31,13 @@ public class ReviewsDaoStandard implements ReviewsDao {
             "FROM public.reviews " +
             "WHERE id = ?";
 
-    private final String sqlUpdateReview = "UPDATE public.reviews " +
-            "SET content = ?, is_positive = ?" +//, useful = ? " +
-            "WHERE id = ?";
-
     private final String sqlUpdateReviewUseful = "UPDATE public.reviews " +
             "SET useful = ? " +
-            "WHERE id = ?";
-    private final String sqlDeleteReview = "DELETE FROM public.reviews " +
             "WHERE id = ?";
 
     @Override
     public Review findReviewById(Long id) {
+        log.info("DAO: поиск отзыва по ID.");
         Review review;
         try {
             review = jdbcTemplate.queryForObject(sqlQueryGetReviewById, this::mapRowToReview, id);
@@ -46,6 +49,7 @@ public class ReviewsDaoStandard implements ReviewsDao {
 
     @Override
     public List<Review> findReviews(Long filmId, Integer count) {
+        log.info("DAO: поиск отзывов удовлетворяющих условию.");
         String sqlFindReviews;
         List<Review> reviewList;
         try {
@@ -64,13 +68,15 @@ public class ReviewsDaoStandard implements ReviewsDao {
                 reviewList = jdbcTemplate.query(sqlFindReviews, this::mapRowToReview, filmId, count);
             }
         } catch (EmptyResultDataAccessException e) {
-             reviewList = new ArrayList<>();;
+            reviewList = new ArrayList<>();
+            ;
         }
         return reviewList;
     }
 
     @Override
     public Review save(Review review) {
+        log.info("DAO: сохранение нового отзыва.");
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reviews")
                 .usingGeneratedKeyColumns("id");
@@ -81,6 +87,10 @@ public class ReviewsDaoStandard implements ReviewsDao {
 
     @Override
     public Review update(Review review) {
+        log.info("DAO: обновление отзыва.");
+        String sqlUpdateReview = "UPDATE public.reviews " +
+                "SET content = ?, is_positive = ?" +
+                "WHERE id = ?";
         jdbcTemplate.update(sqlUpdateReview,
                 review.getContent(),
                 review.getIsPositive(),
@@ -92,11 +102,15 @@ public class ReviewsDaoStandard implements ReviewsDao {
 
     @Override
     public boolean delete(Long id) {
+        log.info("DAO: удаление отзыва.");
+        String sqlDeleteReview = "DELETE FROM public.reviews " +
+                "WHERE id = ?";
         return jdbcTemplate.update(sqlDeleteReview, id) > 0;
     }
 
     @Override
     public Review like(Long id, Long userId) {
+        log.info("DAO: лайк отзыву с ID " + id + ".");
         Review review;
         try {
             review = jdbcTemplate.queryForObject(sqlQueryGetReviewById, this::mapRowToReview, id);
@@ -111,6 +125,7 @@ public class ReviewsDaoStandard implements ReviewsDao {
 
     @Override
     public Review dislike(Long id, Long userId) {
+        log.info("DAO: дизлайк отзыву с ID " + id + ".");
         Review review;
         try {
             review = jdbcTemplate.queryForObject(sqlQueryGetReviewById, this::mapRowToReview, id);
@@ -125,6 +140,7 @@ public class ReviewsDaoStandard implements ReviewsDao {
 
     @Override
     public boolean deleteLike(Long id, Long userId) {
+        log.info("DAO: удаление лайка у отзыва с ID " + id + ".");
         Review review;
         try {
             review = jdbcTemplate.queryForObject(sqlQueryGetReviewById, this::mapRowToReview, id);
@@ -137,6 +153,7 @@ public class ReviewsDaoStandard implements ReviewsDao {
 
     @Override
     public boolean deleteDislike(Long id, Long userId) {
+        log.info("DAO: удаление дизлайка у отзыва с ID " + id + ".");
         Review review;
         try {
             review = jdbcTemplate.queryForObject(sqlQueryGetReviewById, this::mapRowToReview, id);
@@ -147,6 +164,7 @@ public class ReviewsDaoStandard implements ReviewsDao {
         return true;
     }
 
+    // преобразование строки ответа БД в объект Review
     private Review mapRowToReview(ResultSet resultSet, int rowNumber) throws SQLException {
         return Review.builder()
                 .reviewId(resultSet.getLong("id"))
