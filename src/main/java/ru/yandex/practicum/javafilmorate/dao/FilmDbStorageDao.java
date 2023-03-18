@@ -150,18 +150,16 @@ public class FilmDbStorageDao implements FilmStorage {
     public List<Film> getDirectorFilms(long id, String sortBy) {
         String sql;
         if (sortBy.equals("year")) {
-            sql = "SELECT F.*, M.*, FD.DIRECTOR_ID " +
+            sql = "SELECT F.*, FD.DIRECTOR_ID " +
                     "FROM FILM_DIRECTOR FD " +
                     "JOIN FILM F on F.ID = FD.FILM_ID " +
-                    "JOIN MPA M on F.MPA = M.ID " +
                     "WHERE DIRECTOR_ID = ? " +
                     "GROUP BY f.ID, F.RELEASE_DATE " +
                     "ORDER BY F.RELEASE_DATE";
         } else if (sortBy.equals("likes")) {
-            sql = "SELECT f.*, M.*, FD.DIRECTOR_ID " +
+            sql = "SELECT f.*, FD.DIRECTOR_ID " +
                     "FROM FILM_DIRECTOR FD " +
                     "JOIN FILM F on F.ID = FD.FILM_ID " +
-                    "JOIN MPA M on F.MPA = M.ID " +
                     "LEFT JOIN LIKES fl on F.ID = fl.film_id " +
                     "WHERE DIRECTOR_ID = ? " +
                     "GROUP BY f.ID, fl.film_id IN ( " +
