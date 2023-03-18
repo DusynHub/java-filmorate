@@ -104,18 +104,23 @@ public class FilmDbStorageDao implements FilmStorage {
                     String.format("Фильм с идентификатором %d не найден.", film.getId()));
         }
 
-
-        filmGenreDao.deleteAllFilmGenresByFilmId(film.getId());
         if (film.getGenres() != null) {
+            filmGenreDao.deleteAllFilmGenresByFilmId(film.getId());
             filmGenreDao.insertFilmGenre(film);
+        } else {
+            if (filmGenreDao.getFilmGenre(film.getId()) != null) {
+                film.setGenres(filmGenreDao.getFilmGenre(film.getId()));
+            }
         }
 
-
-        filmDirectorDao.deleteAllFilmDirectorsByFilmId(film.getId());
         if (film.getDirectors() != null) {
+            filmDirectorDao.deleteAllFilmDirectorsByFilmId(film.getId());
             filmDirectorDao.insertFilmDirector(film);
+        } else {
+            if (filmDirectorDao.getFilmDirector(film.getId()) != null) {
+                film.setDirectors(filmDirectorDao.getFilmDirector(film.getId()));
+            }
         }
-
 
         return film;
     }
