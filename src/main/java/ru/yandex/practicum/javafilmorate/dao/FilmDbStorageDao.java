@@ -114,7 +114,7 @@ public class FilmDbStorageDao implements FilmStorage {
         }
 
         filmDirectorDao.deleteAllFilmDirectorsByFilmId(film.getId());
-        
+
         if (film.getDirectors() != null) {
             filmDirectorDao.insertFilmDirector(film);
         }
@@ -150,23 +150,25 @@ public class FilmDbStorageDao implements FilmStorage {
     public List<Film> getDirectorFilms(long id, String sortBy) {
         String sql;
         if (sortBy.equals("year")) {
-            sql = "SELECT id, name, description, release_date, duration, mpa, rate, LIKES_AMOUNT " +
-                    "                FROM FILM as f " +
-                    "                     JOIN FILM_DIRECTOR AS fd ON f.ID = fd.film_id " +
-                    "                     JOIN FILM_GENRE AS fg ON f.ID = fg.FILM_ID" +
-                    "                     LEFT JOIN likes AS l ON f.id = l.film_id " +
-                    "                     WHERE fd.director_id = ? " +
-                    "                     GROUP BY f.ID, f.RELEASE_DATE " +
-                    "                     ORDER BY RELEASE_DATE DESC";
+            sql = "SELECT F.*, M.*, FD.DIRECTOR_ID " +
+                    "FROM FILM_DIRECTOR FD " +
+                    "JOIN FILM F on F.ID = FD.FILM_ID " +
+                    "JOIN MPA M on F.MPA = M.ID " +
+                    "WHERE DIRECTOR_ID = ? " +
+                    "GROUP BY f.ID, F.RELEASE_DATE " +
+                    "ORDER BY F.RELEASE_DATE";
         } else if (sortBy.equals("likes")) {
-            sql = "SELECT id, name, description, release_date, duration, mpa, rate, LIKES_AMOUNT " +
-                    "                FROM FILM as f " +
-                    "                     JOIN FILM_DIRECTOR AS fd ON f.ID = fd.film_id " +
-                    "                     JOIN FILM_GENRE AS fg ON f.ID = fg.FILM_ID" +
-                    "                     LEFT JOIN likes AS l ON f.id = l.film_id " +
-                    "                     WHERE fd.director_id = ? " +
-                    "                     GROUP BY f.ID, f.LIKES_AMOUNT " +
-                    "                     ORDER BY LIKES_AMOUNT DESC";
+            sql = "SELECT f.*, M.*, FD.DIRECTOR_ID " +
+                    "FROM FILM_DIRECTOR FD " +
+                    "JOIN FILM F on F.ID = FD.FILM_ID " +
+                    "JOIN MPA M on F.MPA = M.ID " +
+                    "LEFT JOIN LIKES fl on F.ID = fl.film_id " +
+                    "WHERE DIRECTOR_ID = ? " +
+                    "GROUP BY f.ID, fl.film_id IN ( " +
+                    "SELECT film_id " +
+                    "FROM LIKES " +
+                    ") " +
+                    "ORDER BY COUNT(fl.film_id) DESC";
         } else {
             throw new RuntimeException("Ошибка ввода");
         }
