@@ -113,13 +113,17 @@ public class UserDbStorageDao implements UserStorage {
 
 
     public List<User> getUserFriends(long id){
-        User user = jdbcTemplate.queryForObject("SELECT id, email,login,name,birthday " +
-                        "FROM USERS " +
-                        "WHERE id = ? LIMIT 1",
-                (ResultSet rs, int rowNum) -> User.makeUser(rs), id);
-        if(user == null){
-            log.info("Не найден пользователь: c id = {}", id);
-            throw new EntityDoesNotExistException("Пользователь не найден");
+        //проверка существование пользователя
+        String sql = "SELECT id, email,login,name,birthday " +
+                "FROM USERS " +
+                "WHERE id = ? LIMIT 1";
+        try {
+           jdbcTemplate.queryForObject(sql,
+                   (ResultSet rs, int rowNum) -> User.makeUser(rs),
+                   id);
+        } catch(EmptyResultDataAccessException e){
+            log.debug("Пользователь с идентификатором {} не найден.", id);
+            throw new EntityDoesNotExistException(String.format("Пользователь с идентификатором %d не найден.", id));
         }
 
         return jdbcTemplate.query("SELECT  UF.id, UF.email, UF.login, UF.name, UF.birthday " +
