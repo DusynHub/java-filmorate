@@ -9,8 +9,10 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.javafilmorate.exceptions.EntityDoesNotExistException;
+import ru.yandex.practicum.javafilmorate.model.Director;
 import ru.yandex.practicum.javafilmorate.model.Film;
 import ru.yandex.practicum.javafilmorate.model.FilmSort;
+import ru.yandex.practicum.javafilmorate.model.Genre;
 import ru.yandex.practicum.javafilmorate.storage.FilmStorage;
 
 import java.sql.Date;
@@ -101,7 +103,14 @@ public class FilmDbStorageDao implements FilmStorage {
             throw new EntityDoesNotExistException(
                     String.format("Фильм с идентификатором %d не найден.", film.getId()));
         }
-        film.setGenres(filmGenreDao.getFilmGenre(film.getId()));
+
+
+        filmGenreDao.deleteAllFilmGenresByFilmId(film.getId());
+        filmGenreDao.insertFilmGenre(film);
+
+        filmDirectorDao.deleteAllFilmDirectorsByFilmId(film.getId());
+        filmDirectorDao.insertFilmDirector(film);
+
         return film;
     }
 
@@ -154,12 +163,7 @@ public class FilmDbStorageDao implements FilmStorage {
             throw new RuntimeException("Ошибка ввода");
         }
 
-        List<Film> filmList = jdbcTemplate.query(sql, (ResultSet rs, int rowNum) -> Film.makeFilm(rs), id);
-        for (Film film : filmList) {
-            film.setDirectors(filmDirectorDao.getFilmDirector(film.getId()));
-            film.setGenres(filmGenreDao.getFilmGenre(film.getId()));
-        }
-        return filmList;
+        return jdbcTemplate.query(sql, (ResultSet rs, int rowNum) -> Film.makeFilm(rs), id);
     }
 }
 

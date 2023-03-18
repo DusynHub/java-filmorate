@@ -58,17 +58,7 @@ public class FilmService {
     }
 
     public Film updateFilmInStorage(Film film) {
-        filmStorage.updateFilm(film);
-        filmGenreDao.deleteAllFilmGenresByFilmId(film.getId());
-        filmDirectorDao.deleteAllFilmDirectorsByFilmId(film.getId());
-        if (film.getGenres() != null) {
-            filmGenreDao.insertFilmGenre(film);
-        }
-        if (film.getDirectors() != null) {
-            filmDirectorDao.insertFilmDirector(film);
-        }
-        System.out.println(film);
-        return film;
+        return filmStorage.updateFilm(film);
     }
 
     public List<Film> getAllFilmsFromStorage() {
@@ -156,6 +146,13 @@ public class FilmService {
     }
 
     public List<Film> getDirectorFilms(long id, String sortBy) {
-        return filmStorage.getDirectorFilms(id, sortBy);
+        List<Film> filmList = filmStorage.getDirectorFilms(id, sortBy);
+        filmList.forEach((film) -> {
+            film.setLikes(likeDao.getFilmLikes(film.getId()));
+            film.setGenres(filmGenreDao.getFilmGenre(film.getId()));
+            film.setMpa(mpaDao.getMpaById(film.getMpa().getId()));
+            film.setDirectors(filmDirectorDao.getFilmDirector(film.getId()));
+        });
+        return filmList;
     }
 }
