@@ -66,12 +66,15 @@ public class FilmDbStorageDao implements FilmStorage {
         }
     }
 
+    // Проверка таблиц по названиям. При удалении фильма удаляем все его появления в других таблицах
     @Override
     public Film removeFilm(Long id) {
         Film film = getFilm(id);
-        String sql = "DELETE FROM FILM \n" +
-                     "WHERE id = ?";
-        jdbcTemplate.update(sql, id);
+        jdbcTemplate.update("DELETE FROM FILM_GENRE WHERE film_id = ?", id);
+        jdbcTemplate.update("DELETE FROM FILM_DIRECTOR WHERE film_id = ?", id);
+        jdbcTemplate.update("DELETE FROM LIKES WHERE film_id = ?", id);
+        jdbcTemplate.update("DELETE FROM REVIEWS WHERE film_id = ?", id);
+        jdbcTemplate.update("DELETE FROM FILM WHERE id = ?", id);
         return film;
     }
 

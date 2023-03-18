@@ -58,6 +58,11 @@ public class FilmService {
         return filmGenreDao.insertFilmGenre(film);
     }
 
+    //build
+    public Film deleteFilmFromStorage(Long id) {
+        return filmStorage.removeFilm(id);
+    }
+
     public List<Film> getAllFilmsFromStorage() {
 
         List<Film> films = filmStorage.getAllFilms();
