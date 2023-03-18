@@ -20,4 +20,6 @@ public interface FilmStorage {
 
      public List<Film> getMostLikedFilms(int limit);
 
+     public List<Film> getCommonFilms(int userId, int friendId);
+
 }

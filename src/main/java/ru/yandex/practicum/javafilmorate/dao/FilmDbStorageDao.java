@@ -124,5 +124,10 @@ public class FilmDbStorageDao implements FilmStorage {
                 );
         return jdbcTemplate.query(sql, (rs, rowNum) ->  Film.makeFilm(rs));
     }
-}
 
+    @Override
+    public List<Film> getCommonFilms(int userId, int friendId) {
+
+        return null;
+    }
+}
