@@ -10,6 +10,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.javafilmorate.exceptions.EntityDoesNotExistException;
 import ru.yandex.practicum.javafilmorate.model.Film;
+import ru.yandex.practicum.javafilmorate.model.FilmSort;
 import ru.yandex.practicum.javafilmorate.storage.FilmStorage;
 
 import java.sql.Date;
@@ -26,6 +27,7 @@ public class FilmDbStorageDao implements FilmStorage {
 
     private final JdbcTemplate jdbcTemplate;
     private final FilmGenreDao filmGenreDao;
+    private final FilmDirectorDao filmDirectorDao;
 
     @Override
     public Film addFilm(Film film) {
@@ -125,6 +127,39 @@ public class FilmDbStorageDao implements FilmStorage {
                 "LIMIT %d", limit
                 );
         return jdbcTemplate.query(sql, (rs, rowNum) ->  Film.makeFilm(rs));
+    }
+
+    @Override
+    public List<Film> getDirectorFilms(long id, String sortBy) {
+        String sql;
+        if (sortBy.equals("year")) {
+            sql = "SELECT id, name, description, release_date, duration, mpa, rate, LIKES_AMOUNT " +
+                    "                FROM FILM as f " +
+                    "                     JOIN FILM_DIRECTOR AS fd ON f.ID = fd.film_id " +
+                    "                     JOIN FILM_GENRE AS fg ON f.ID = fg.FILM_ID" +
+                    "                     LEFT JOIN likes AS l ON f.id = l.film_id " +
+                    "                     WHERE fd.director_id = ? " +
+                    "                     GROUP BY f.ID, f.RELEASE_DATE " +
+                    "                     ORDER BY RELEASE_DATE DESC";
+        } else if (sortBy.equals("likes")) {
+            sql = "SELECT id, name, description, release_date, duration, mpa, rate, LIKES_AMOUNT " +
+                    "                FROM FILM as f " +
+                    "                     JOIN FILM_DIRECTOR AS fd ON f.ID = fd.film_id " +
+                    "                     JOIN FILM_GENRE AS fg ON f.ID = fg.FILM_ID" +
+                    "                     LEFT JOIN likes AS l ON f.id = l.film_id " +
+                    "                     WHERE fd.director_id = ? " +
+                    "                     GROUP BY f.ID, f.LIKES_AMOUNT " +
+                    "                     ORDER BY LIKES_AMOUNT DESC";
+        } else {
+            throw new RuntimeException("Ошибка ввода");
+        }
+
+        List<Film> filmList = jdbcTemplate.query(sql, (ResultSet rs, int rowNum) -> Film.makeFilm(rs), id);
+        for (Film film : filmList) {
+            film.setDirectors(filmDirectorDao.getFilmDirector(film.getId()));
+            film.setGenres(filmGenreDao.getFilmGenre(film.getId()));
+        }
+        return filmList;
     }
 }
 

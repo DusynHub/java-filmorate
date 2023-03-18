@@ -154,4 +154,8 @@ public class FilmService {
         });
         return films;
     }
+
+    public List<Film> getDirectorFilms(long id, String sortBy) {
+        return filmStorage.getDirectorFilms(id, sortBy);
+    }
 }

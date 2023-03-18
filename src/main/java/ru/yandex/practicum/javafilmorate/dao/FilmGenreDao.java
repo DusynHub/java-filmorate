@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.javafilmorate.model.Film;
 import ru.yandex.practicum.javafilmorate.model.FilmGenre;
+import ru.yandex.practicum.javafilmorate.model.FilmSort;
 import ru.yandex.practicum.javafilmorate.model.Genre;
 
 import java.sql.PreparedStatement;
@@ -29,6 +30,7 @@ public class FilmGenreDao {
                      "WHERE fg.film_id = ?";
         return jdbcTemplate.query(sql, (rs, rowNum) -> Genre.makeGenre(rs), id);
     }
+
     public Film insertFilmGenre(Film film){
         String sql = "INSERT INTO FILM_GENRE(FILM_ID,GENRE_ID)  " +
                      "VALUES(?,?)";
