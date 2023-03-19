@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.javafilmorate.dao.*;
+import ru.yandex.practicum.javafilmorate.exceptions.EntityDoesNotExistException;
 import ru.yandex.practicum.javafilmorate.model.*;
 import ru.yandex.practicum.javafilmorate.storage.FilmStorage;
 import ru.yandex.practicum.javafilmorate.storage.UserStorage;
@@ -20,7 +21,10 @@ public class FilmService {
     private final FilmStorage filmStorage;
     private final LikeDao likeDao;
     private final FilmGenreDao filmGenreDao;
+
+    private final FilmDirectorDao filmDirectorDao;
     private final GenreDao genreDao;
+    private final DirectorDao directorDao;
     private final MpaDao mpaDao;
     private final UserStorage userStorage;
 
@@ -34,13 +38,21 @@ public class FilmService {
         this.filmStorage = filmStorage;
         this.likeDao = likeDao;
         this.filmGenreDao = filmGenreDao;
+        this.filmDirectorDao = filmDirectorDao;
         this.genreDao = genreDao;
         this.mpaDao = mpaDao;
+        this.directorDao = directorDao;
         this.userStorage = userStorage;
     }
 
     public Film addNewFilmToStorage(Film film) {
         filmStorage.addFilm(film);
+        if (film.getGenres() != null) {
+            filmGenreDao.insertFilmGenre(film);
+        }
+        if (film.getDirectors() != null) {
+            filmDirectorDao.insertFilmDirector(film);
+        }
         if (film.getGenres() == null || film.getGenres().isEmpty()) {
             return film;
         }
@@ -49,27 +61,26 @@ public class FilmService {
     }
 
     public Film updateFilmInStorage(Film film) {
-        filmStorage.updateFilm(film);
-        filmGenreDao.deleteAllFilmGenresByFilmId(film.getId());
-        if (film.getGenres() == null || film.getGenres().isEmpty()) {
-            return film;
-        }
-        System.out.println(film);
-        return filmGenreDao.insertFilmGenre(film);
+        return filmStorage.updateFilm(film);
     }
 
     public List<Film> getAllFilmsFromStorage() {
 
         List<Film> films = filmStorage.getAllFilms();
         List<FilmGenre> filmGenres = filmGenreDao.getAllFilmGenres();
+        List<FilmDirector> filmDirectors = filmDirectorDao.getAllFilmDirectors();
+
         Map<Long, Genre> genres = genreDao.getAll()
-                .stream()
-                .collect(Collectors.toMap(Genre::getId, genre -> genre));
+                                            .stream()
+                                            .collect(Collectors.toMap(Genre::getId, genre -> genre));
 
         Map<Integer, Mpa> mpaList = mpaDao.getAll()
-                .stream()
-                .collect(Collectors.toMap(Mpa::getId, thisMpa -> thisMpa));
+                                            .stream()
+                                            .collect(Collectors.toMap(Mpa::getId, thisMpa -> thisMpa));
 
+        Map<Long, Director> directorsList = directorDao.getAllDirectors()
+                                          .stream()
+                                          .collect(Collectors.toMap(Director::getId, director -> director));
 
         Map<Long, List<Genre>> mappedGenres = new HashMap<>();
         for (FilmGenre filmGenre : filmGenres) {
@@ -79,13 +90,20 @@ public class FilmService {
             mappedGenres.get(filmGenre.getFilmId()).add(genres.get(filmGenre.getGenreId()));
         }
 
+        Map<Long, List<Director>> mappedDirectors = new HashMap<>();
+        for (FilmDirector filmDirector : filmDirectors) {
+            if (!mappedDirectors.containsKey(filmDirector.getFilmId())) {
+                mappedDirectors.put(filmDirector.getFilmId(), new ArrayList<>());
+            }
+            mappedDirectors.get(filmDirector.getFilmId()).add(directorsList.get(filmDirector.getDirectorId()));
+        }
+
         List<Like> allLikes = likeDao.getAllLikes();
         Map<Long, User> allUsers = userStorage.getAllUsers()
-                .stream()
-                .collect(Collectors.toMap(User::getId, user -> user));
+                                                .stream()
+                                                .collect(Collectors.toMap(User::getId, user -> user));
 
         Map<Long, List<User>> mappedUsers = new HashMap<>();
-
         for (Like like : allLikes) {
             if (!mappedUsers.containsKey(like.getFilmId())) {
                 mappedUsers.put(like.getFilmId(), new ArrayList<>());
@@ -97,6 +115,7 @@ public class FilmService {
             film.setGenres(mappedGenres.getOrDefault(film.getId(), new ArrayList<>()));
             film.setMpa(mpaList.get(film.getMpa().getId()));
             film.setLikes(mappedUsers.getOrDefault(film.getId(), new ArrayList<>()));
+            film.setDirectors(mappedDirectors.getOrDefault(film.getId(), new ArrayList<>()));
         });
         return films;
     }
@@ -106,7 +125,13 @@ public class FilmService {
         film.setLikes(likeDao.getFilmLikes(id));
         film.setGenres(filmGenreDao.getFilmGenre(id));
         film.setMpa(mpaDao.getMpaById(film.getMpa().getId()));
+        film.setDirectors(filmDirectorDao.getFilmDirector(id));
         return film;
+    }
+
+    //build
+    public Film deleteFilmFromStorage(Long id) {
+        return filmStorage.removeFilm(id);
     }
 
     public void likeFilmInStorage(long id, long userId) {
@@ -140,6 +165,22 @@ public class FilmService {
             film.setLikes(likeDao.getFilmLikes(film.getId()));
             film.setGenres((filmGenreDao.getFilmGenre(film.getId())));
             film.setMpa(mpaDao.getMpaById(film.getMpa().getId()));
+            film.setDirectors(filmDirectorDao.getFilmDirector(film.getId()));
         });
+        return films;
+    }
+
+    public List<Film> getDirectorFilms(long id, String sortBy) {
+        if (directorDao.getDirectorById(id) == null) {
+            throw new EntityDoesNotExistException("Не найден режиссер с id " + id);
+        }
+        List<Film> filmList = filmStorage.getDirectorFilms(id, sortBy);
+        filmList.forEach((film) -> {
+            film.setLikes(likeDao.getFilmLikes(film.getId()));
+            film.setGenres(filmGenreDao.getFilmGenre(film.getId()));
+            film.setMpa(mpaDao.getMpaById(film.getMpa().getId()));
+            film.setDirectors(filmDirectorDao.getFilmDirector(film.getId()));
+        });
+        return filmList;
     }
 }

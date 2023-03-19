@@ -3,6 +3,7 @@ package ru.yandex.practicum.javafilmorate.controllers;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.javafilmorate.model.Film;
+import ru.yandex.practicum.javafilmorate.model.FilmSort;
 import ru.yandex.practicum.javafilmorate.service.FilmService;
 
 import javax.validation.Valid;
@@ -63,4 +64,10 @@ public class FilmController {
         log.info(String.format("Получен запрос 'GET /films/popular?count=%d&genreId=%d&year=%d'", count, genreId, year));
         return filmService.getMostPopularsFilmsByGenreByYear(count, genreId, year);
     }
+
+    @GetMapping("/director/{directorId}")
+    public List<Film> getDirectorFilms(@PathVariable long directorId, @RequestParam String sortBy) {
+        return filmService.getDirectorFilms(directorId, sortBy);
+    }
+
 }
