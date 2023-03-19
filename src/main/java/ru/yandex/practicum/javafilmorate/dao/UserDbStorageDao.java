@@ -83,7 +83,7 @@ public class UserDbStorageDao implements UserStorage {
     public User updateUser(User user) {
 
         String sqlQuery = "UPDATE USERS " +
-                          "SET   email = ?," +
+    "                      SET   email = ?," +
                                 "login = ?," +
                                 "name = ?," +
                                 "birthday = ?" +
@@ -113,9 +113,11 @@ public class UserDbStorageDao implements UserStorage {
 
 
     public List<User> getUserFriends(long id){
-        return jdbcTemplate.query("SELECT  UF.id, UF.email, UF.login, UF.name, UF.birthday " +
+        String sql =    "SELECT  UF.id, UF.email, UF.login, UF.name, UF.birthday " +
                 "FROM FRIENDSHIP f " +
                 "LEFT JOIN USERS UF on f.FRIEND2_ID = UF.ID " +
-                "WHERE FRIEND1_ID = ?", (rs, rowNum) -> User.makeUser(rs), id);
+                "WHERE FRIEND1_ID = ?";
+
+        return jdbcTemplate.query(sql, (rs, rowNum) -> User.makeUser(rs), id);
     }
 }

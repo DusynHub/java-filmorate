@@ -39,22 +39,21 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public User getUser(@PathVariable long id) {
+    public User getUsero(@PathVariable long id) {
         log.info(String.format("Получен запрос 'GET /users/%d'", id));
         return userService.getUserFromStorage(id);
+    }
+
+    @DeleteMapping("/{userId}")
+    public User deleteUserById(@PathVariable long userId) {
+        log.info(String.format("получен запрос 'DELETE /users/%d", userId));
+        return userService.deleteUserById(userId);
     }
 
     @PutMapping("/{id}/friends/{friendId}")
     public void addFriend(@PathVariable long id, @PathVariable long friendId) {
         log.info(String.format("Получен запрос 'PUT /users/%d/friends/%d'", id, friendId));
         userService.addUsersToFriendsInStorage(id, friendId);
-    }
-
-    //удаление юзера
-    @DeleteMapping("/{userId}")
-    public User deleteUserById(@PathVariable long userId) {
-        log.info(String.format("получен запрос 'DELETE /users/%d", userId));
-        return userService.deleteUserById(userId);
     }
 
     @DeleteMapping("/{id}/friends/{friendId}")
