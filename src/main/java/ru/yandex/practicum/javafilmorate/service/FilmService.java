@@ -33,8 +33,10 @@ public class FilmService {
             , @Qualifier("userStorageDb") UserStorage userStorage
             , LikeDao likeDao
             , FilmGenreDao filmGenreDao
+            , FilmDirectorDao filmDirectorDao
             , GenreDao genreDao
-            , MpaDao mpaDao) {
+            , MpaDao mpaDao
+            , DirectorDao directorDao) {
         this.filmStorage = filmStorage;
         this.likeDao = likeDao;
         this.filmGenreDao = filmGenreDao;
@@ -163,11 +165,10 @@ public class FilmService {
     private void setForFilms(List<Film> films) {
         films.forEach((film) -> {
             film.setLikes(likeDao.getFilmLikes(film.getId()));
-            film.setGenres((filmGenreDao.getFilmGenre(film.getId())));
+            film.setGenres(filmGenreDao.getFilmGenre(film.getId()));
             film.setMpa(mpaDao.getMpaById(film.getMpa().getId()));
             film.setDirectors(filmDirectorDao.getFilmDirector(film.getId()));
         });
-        return films;
     }
 
     public List<Film> getDirectorFilms(long id, String sortBy) {
