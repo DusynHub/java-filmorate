@@ -12,15 +12,20 @@ import java.sql.SQLException;
 @AllArgsConstructor
 @EqualsAndHashCode
 @ToString
+@Builder
 public class Director {
-    long id;
+    private long id;
     @NotNull
     @NotBlank
-    String name;
+    private String name;
 
     public static Director makeDirector(ResultSet rs) throws SQLException {
         int id = rs.getInt("id");
         String name = rs.getString("name");
-        return new Director(id,name);
+        return builder()
+                .id(id)
+                .name(name)
+                .build();
     }
 }
+
