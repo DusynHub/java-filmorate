@@ -111,7 +111,6 @@ public class UserService {
     }
 
     public List<Film> getUserRecommendationsFromStorage(long id) {
-        checkIsUserIdNegative(id);
         userStorage.getUser(id);
         List<Like> userLikes = likeDao.getUserLikesById(id);
 
@@ -139,6 +138,4 @@ public class UserService {
                                 .map(filmService::getFilmFromStorage)
                                 .collect(Collectors.toList());
     }
-
-
 }
