@@ -55,10 +55,6 @@ public class FilmService {
         if (film.getDirectors() != null) {
             filmDirectorDao.insertFilmDirector(film);
         }
-        if (film.getGenres() == null || film.getGenres().isEmpty()) {
-            return film;
-        }
-        filmGenreDao.insertFilmGenre(film);
         return film;
     }
 

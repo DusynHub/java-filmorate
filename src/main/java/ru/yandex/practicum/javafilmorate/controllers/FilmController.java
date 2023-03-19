@@ -39,6 +39,12 @@ public class FilmController {
         filmService.likeFilmInStorage(id, userId);
     }
 
+    @DeleteMapping("/{filmId}")
+    public Film deleteFilmById(@PathVariable long filmId) {
+        log.info("Получен запрос 'DELETE /films'");
+        return filmService.deleteFilmFromStorage(filmId);
+    }
+
     @DeleteMapping("/{id}/like/{userId}")
     public void deleteLikeFromFilm(@PathVariable long id, @PathVariable long userId) {
         log.info(String.format("Получен запрос 'DELETE /films/%d/like/%d'", id, userId));
