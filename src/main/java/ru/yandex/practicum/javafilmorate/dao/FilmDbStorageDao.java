@@ -201,8 +201,8 @@ public class FilmDbStorageDao implements FilmStorage {
     public List<Film> getMostPopularsFilmsByYear(int count, int year) {
         String sql = ("SELECT * " +
                         "FROM film f " +
-                        "WHERE EXTRACT(YEAR FROM CAST(release_date AS date)) = %d " +
-                        "LIMIT %d"
+                        "WHERE EXTRACT(YEAR FROM CAST(release_date AS date)) = ? " +
+                        "LIMIT ?"
         );
         return jdbcTemplate.query(sql, (rs, rowNum) -> Film.makeFilm(rs), year,count);
     }
