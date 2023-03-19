@@ -3,6 +3,7 @@ package ru.yandex.practicum.javafilmorate.dao;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.javafilmorate.exceptions.EntityDoesNotExistException;
@@ -42,10 +43,20 @@ public class FriendShipDao {
     }
 
     public List<User> getUserFriends(long id){
+        try {
+            jdbcTemplate.queryForObject("SELECT id, email,login,name,birthday FROM USERS " +
+                            "WHERE id = ? LIMIT 1",
+                    (ResultSet rs, int rowNum) -> User.makeUser(rs),
+                    id);
+        } catch(EmptyResultDataAccessException e){
+            log.debug("Пользователь с идентификатором {} не найден.", id);
+            throw new EntityDoesNotExistException(String.format("Пользователь с идентификатором %d не найден.", id));
+        }
+
         String sql =    "SELECT  UF.id, UF.email, UF.login, UF.name, UF.birthday " +
-                        "FROM FRIENDSHIP f " +
-                        "LEFT JOIN USERS UF on f.FRIEND2_ID = UF.ID " +
-                        "WHERE FRIEND1_ID = ?";
+                "FROM FRIENDSHIP f " +
+                "LEFT JOIN USERS UF on f.FRIEND2_ID = UF.ID " +
+                "WHERE FRIEND1_ID = ?";
 
         return jdbcTemplate.query(sql, (rs, rowNum) -> User.makeUser(rs), id);
     }
