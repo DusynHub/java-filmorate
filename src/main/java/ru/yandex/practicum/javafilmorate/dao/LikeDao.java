@@ -101,11 +101,11 @@ public class LikeDao {
         parameters.addValue("filmsIdLikedByUser", filmsIdLikedByUser);
         parameters.addValue("ids", id);
 
-        String sql =    "SELECT l.USER_ID, COUNT(L.FILM_ID) AS FILM_ID \n" +
+        String sql =    "SELECT l.USER_ID, COUNT(l.FILM_ID) AS FILM_ID \n" +
                         "FROM likes l \n" +
-                        "WHERE L.USER_ID NOT IN (:ids) AND l.FILM_ID IN (:filmsIdLikedByUser) \n" +
+                        "WHERE l.USER_ID NOT IN (:ids) AND l.FILM_ID IN (:filmsIdLikedByUser) \n" +
                         "GROUP BY l.USER_ID \n" +
-                        "ORDER BY COUNT(L.FILM_ID) DESC \n" +
+                        "ORDER BY COUNT(l.FILM_ID) DESC \n" +
                         "LIMIT 1 \n";
 
         return namedParameterJdbcTemplate.query(sql,parameters ,(rs, rowNum) -> makeLike(rs));
