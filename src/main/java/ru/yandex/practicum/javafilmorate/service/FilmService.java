@@ -127,6 +127,11 @@ public class FilmService {
         return film;
     }
 
+    //build
+    public Film deleteFilmFromStorage(Long id) {
+        return filmStorage.removeFilm(id);
+    }
+
     public void likeFilmInStorage(long id, long userId) {
         likeDao.putLike(id, userId);
     }
