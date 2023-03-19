@@ -143,12 +143,20 @@ public class FilmService {
     public List<Film> getMostPopularsFilmsByGenreByYear(int count, Long genreId, Integer year) {
         List<Film> films;
         if (genreId != null && year != null) {
+            if (genreDao.getGenreById(genreId) == null) {
+                throw new EntityDoesNotExistException(String.format(
+                        "Жанр с идентификатором %d не найден.", genreId));
+            }
             films = filmStorage.getMostPopularsFilmsByGenreByYear(count, genreId, year);
             setForFilms(films);
         } else if (genreId == null && year != null) {
             films = filmStorage.getMostPopularsFilmsByYear(count, year);
             setForFilms(films);
         } else if (year == null && genreId != null) {
+            if (genreDao.getGenreById(genreId) == null) {
+                throw new EntityDoesNotExistException(String.format(
+                        "Жанр с идентификатором %d не найден.", genreId));
+            }
             films = filmStorage.getMostPopularsFilmsByGenre(count, genreId);
             setForFilms(films);
         } else {

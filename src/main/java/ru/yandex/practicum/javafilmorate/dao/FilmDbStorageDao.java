@@ -30,7 +30,6 @@ public class FilmDbStorageDao implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
     private final FilmGenreDao filmGenreDao;
     private final FilmDirectorDao filmDirectorDao;
-    private final GenreDao genreDao;
 
     @Override
     public Film addFilm(Film film) {
@@ -156,10 +155,6 @@ public class FilmDbStorageDao implements FilmStorage {
                 "WHERE g.id = ? AND EXTRACT(YEAR FROM CAST(release_date AS date)) = ? " +
                 "LIMIT ?"
         );
-        if (genreDao.getGenreById(genreId) == null) {
-            throw new EntityDoesNotExistException(String.format(
-                    "Жанр с идентификатором %d не найден.", genreId));
-        }
         return jdbcTemplate.query(sql, (rs, rowNum) -> Film.makeFilm(rs), genreId, year, count);
     }
 
@@ -199,10 +194,6 @@ public class FilmDbStorageDao implements FilmStorage {
                 "WHERE g.id = ? " +
                 "LIMIT ?"
         );
-        if (genreDao.getGenreById(genreId) == null) {
-            throw new EntityDoesNotExistException(String.format(
-                    "Жанр с идентификатором %d не найден.", genreId));
-        }
         return jdbcTemplate.query(sql, (rs, rowNum) -> Film.makeFilm(rs), genreId, count);
     }
 
