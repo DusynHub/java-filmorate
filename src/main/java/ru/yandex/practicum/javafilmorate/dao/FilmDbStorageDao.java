@@ -9,7 +9,10 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.javafilmorate.exceptions.EntityDoesNotExistException;
+import ru.yandex.practicum.javafilmorate.model.Director;
 import ru.yandex.practicum.javafilmorate.model.Film;
+import ru.yandex.practicum.javafilmorate.model.FilmSort;
+import ru.yandex.practicum.javafilmorate.model.Genre;
 import ru.yandex.practicum.javafilmorate.storage.FilmStorage;
 
 import java.sql.Date;
@@ -25,6 +28,8 @@ import java.util.Objects;
 public class FilmDbStorageDao implements FilmStorage {
 
     private final JdbcTemplate jdbcTemplate;
+    private final FilmGenreDao filmGenreDao;
+    private final FilmDirectorDao filmDirectorDao;
 
     @Override
     public Film addFilm(Film film) {
@@ -98,6 +103,22 @@ public class FilmDbStorageDao implements FilmStorage {
             throw new EntityDoesNotExistException(
                     String.format("Фильм с идентификатором %d не найден.", film.getId()));
         }
+
+        if (film.getGenres() != null) {
+            filmGenreDao.deleteAllFilmGenresByFilmId(film.getId());
+            filmGenreDao.insertFilmGenre(film);
+        } else {
+            if (filmGenreDao.getFilmGenre(film.getId()) != null) {
+                film.setGenres(filmGenreDao.getFilmGenre(film.getId()));
+            }
+        }
+
+        filmDirectorDao.deleteAllFilmDirectorsByFilmId(film.getId());
+
+        if (film.getDirectors() != null) {
+            filmDirectorDao.insertFilmDirector(film);
+        }
+
         return film;
     }
 
@@ -123,6 +144,34 @@ public class FilmDbStorageDao implements FilmStorage {
                 "LIMIT %d", limit
                 );
         return jdbcTemplate.query(sql, (rs, rowNum) ->  Film.makeFilm(rs));
+    }
+
+    @Override
+    public List<Film> getDirectorFilms(long id, String sortBy) {
+        String sql;
+        if (sortBy.equals("year")) {
+            sql = "SELECT F.*, FD.DIRECTOR_ID " +
+                    "FROM FILM_DIRECTOR FD " +
+                    "JOIN FILM F on F.ID = FD.FILM_ID " +
+                    "WHERE DIRECTOR_ID = ? " +
+                    "GROUP BY f.ID, F.RELEASE_DATE " +
+                    "ORDER BY F.RELEASE_DATE";
+        } else if (sortBy.equals("likes")) {
+            sql = "SELECT f.*, FD.DIRECTOR_ID " +
+                    "FROM FILM_DIRECTOR FD " +
+                    "JOIN FILM F on F.ID = FD.FILM_ID " +
+                    "LEFT JOIN LIKES fl on F.ID = fl.film_id " +
+                    "WHERE DIRECTOR_ID = ? " +
+                    "GROUP BY f.ID, fl.film_id IN ( " +
+                    "SELECT film_id " +
+                    "FROM LIKES " +
+                    ") " +
+                    "ORDER BY COUNT(fl.film_id) DESC";
+        } else {
+            throw new RuntimeException("Ошибка ввода");
+        }
+
+        return jdbcTemplate.query(sql, (ResultSet rs, int rowNum) -> Film.makeFilm(rs), id);
     }
 }
 
