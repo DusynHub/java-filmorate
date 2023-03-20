@@ -166,6 +166,9 @@ public class FilmService {
     }
 
     public List<Film> getCommonFilms(long userId, long friendId){
+        if (userStorage.getUser(userId) == null || userStorage.getUser(friendId) == null) {
+            throw new EntityDoesNotExistException("Не найден пользователь с одним из данных id" + userId + friendId);
+        }
         List<Film> films = filmStorage.getCommonFilms(userId, friendId);
         films.forEach((film) -> {
             film.setLikes(likeDao.getFilmLikes(film.getId()));
