@@ -3,6 +3,7 @@ package ru.yandex.practicum.javafilmorate.controllers;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.javafilmorate.model.Film;
+import ru.yandex.practicum.javafilmorate.model.FilmSort;
 import ru.yandex.practicum.javafilmorate.service.FilmService;
 
 import javax.validation.Valid;
@@ -38,6 +39,12 @@ public class FilmController {
         filmService.likeFilmInStorage(id, userId);
     }
 
+    @DeleteMapping("/{filmId}")
+    public Film deleteFilmById(@PathVariable long filmId) {
+        log.info("Получен запрос 'DELETE /films'");
+        return filmService.deleteFilmFromStorage(filmId);
+    }
+
     @DeleteMapping("/{id}/like/{userId}")
     public void deleteLikeFromFilm(@PathVariable long id, @PathVariable long userId) {
         log.info(String.format("Получен запрос 'DELETE /films/%d/like/%d'", id, userId));
@@ -62,10 +69,9 @@ public class FilmController {
         return filmService.getMostLikedFilmsFromStorage(count);
     }
 
-    @GetMapping("/common")
-    public List<Film> getCommonFilms(@RequestParam long userId, @RequestParam long friendId){
-        log.info(String.format("Получен запрос 'GET /films/common?userId=%d&friendId=%d'", userId, friendId));
-        return filmService.getCommonFilms(userId, friendId);
+    @GetMapping("/director/{directorId}")
+    public List<Film> getDirectorFilms(@PathVariable long directorId, @RequestParam String sortBy) {
+        return filmService.getDirectorFilms(directorId, sortBy);
     }
 
 }
