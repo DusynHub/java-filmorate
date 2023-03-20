@@ -20,7 +20,9 @@ public class FeedAspect {
     }
 
 
-    @AfterReturning(pointcut = "addLikeControllerMethod() || deleteLikeControllerMethod() || friendControllerMethod()"
+    @AfterReturning(pointcut = "addLikeFilmControllerMethod() || deleteLikeFilmControllerMethod() " +
+            "|| friendControllerMethod() || addReview() || updateReview() || deleteReview()"+
+            "|| addLikeReviewController() || delLikeReviewController()"
             , returning = "val")
     public void afterOperationAspect(JoinPoint jp, Object val) {
 
@@ -28,7 +30,7 @@ public class FeedAspect {
         Object[] parameters = jp.getArgs();
         String methodName = methodSignature.getName();
         // проверка наличия объекта при добавлении ревью
-        log.info("Aspect starting : {}", methodName);
+        log.info("Подписка на событие : {}", methodName);
         if (val == null) {
             feedService.addFeed(methodName, parameters);
         } else {
@@ -38,9 +40,30 @@ public class FeedAspect {
     private void friendControllerMethod() {
     }
     @Pointcut("execution(public * ru.yandex.practicum.javafilmorate.controllers.FilmController.likeFilm(..))")
-    private void addLikeControllerMethod() {
+    private void addLikeFilmControllerMethod() {
     }
     @Pointcut("execution(public * ru.yandex.practicum.javafilmorate.controllers.FilmController.deleteLikeFromFilm(..))")
-    private void deleteLikeControllerMethod() {
+    private void deleteLikeFilmControllerMethod() {
     }
+    @Pointcut("execution(public * ru.yandex.practicum.javafilmorate.controllers.ReviewsController.addReview(..))")
+    private void addReview(){
+
+    }
+    @Pointcut("execution(public * ru.yandex.practicum.javafilmorate.controllers.ReviewsController.updateReview(..))")
+    private void updateReview(){
+
+    }
+    @Pointcut("execution(public * ru.yandex.practicum.javafilmorate.controllers.ReviewsController.deleteDislike(..))")
+    private void deleteReview(){
+
+    }
+    @Pointcut("execution(public * ru.yandex.practicum.javafilmorate.controllers.ReviewsController.likeReview(..))")
+    private void addLikeReviewController(){
+
+    }
+    @Pointcut("execution(public * ru.yandex.practicum.javafilmorate.controllers.ReviewsController.dislikeReview(..))")
+    private void delLikeReviewController(){
+
+    }
+
 }
