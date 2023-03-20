@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
@@ -19,23 +20,25 @@ public class FeedAspect {
         this.feedService = feedService;
     }
 
-
     @AfterReturning(pointcut = "addLikeFilmControllerMethod() || deleteLikeFilmControllerMethod() " +
-            "|| friendControllerMethod() || addReview() || updateReview() || deleteReview()"+
-            "|| addLikeReviewController() || delLikeReviewController()"
+            "|| friendControllerMethod() || addReview() || updateReview()"
             , returning = "val")
     public void afterOperationAspect(JoinPoint jp, Object val) {
-
         MethodSignature methodSignature = (MethodSignature) jp.getSignature();
         Object[] parameters = jp.getArgs();
         String methodName = methodSignature.getName();
-        // проверка наличия объекта при добавлении ревью
         log.info("Подписка на событие : {}", methodName);
-        if (val == null) {
-            feedService.addFeed(methodName, parameters);
-        } else {
-        }
+        feedService.addFeed(methodName, parameters);
     }
+
+    @Before("deleteReview()")
+    public void beforeDeleteReviewAspect(JoinPoint jp) {
+        MethodSignature methodSignature = (MethodSignature) jp.getSignature();
+        Object[] parameters = jp.getArgs();
+        String methodName = methodSignature.getName();
+        feedService.addFeed(methodName, (Long) parameters[0]);
+    }
+
     @Pointcut("execution(public * ru.yandex.practicum.javafilmorate.controllers.UserController.*Friend(..))")
     private void friendControllerMethod() {
     }
@@ -53,16 +56,8 @@ public class FeedAspect {
     private void updateReview(){
 
     }
-    @Pointcut("execution(public * ru.yandex.practicum.javafilmorate.controllers.ReviewsController.deleteDislike(..))")
+    @Pointcut("execution(public * ru.yandex.practicum.javafilmorate.controllers.ReviewsController.deleteReview(..))")
     private void deleteReview(){
-
-    }
-    @Pointcut("execution(public * ru.yandex.practicum.javafilmorate.controllers.ReviewsController.likeReview(..))")
-    private void addLikeReviewController(){
-
-    }
-    @Pointcut("execution(public * ru.yandex.practicum.javafilmorate.controllers.ReviewsController.dislikeReview(..))")
-    private void delLikeReviewController(){
 
     }
 

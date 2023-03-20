@@ -2,11 +2,14 @@ package ru.yandex.practicum.javafilmorate.dao;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.javafilmorate.model.Feed;
 import ru.yandex.practicum.javafilmorate.storage.FeedDao;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.sql.Timestamp;
 import java.util.Collection;
@@ -47,7 +50,23 @@ public class FeedDaoImpl implements FeedDao {
 
         simpleJdbcInsert.execute(feedToMap(feed));
     }
-
+    @Override
+    public Feed findFeedByEntityId(Long reviewId) {
+        final String sql = "SELECT * FROM FEED_LIST where ENTITY_ID = ? limit 1";
+        return jdbcTemplate.queryForObject(sql, new RowMapper<Feed>() {
+            @Override
+            public Feed mapRow(ResultSet rs, int rowNum) throws SQLException {
+                return Feed.builder()
+                        .eventId(rs.getLong("EVENT_ID"))
+                        .userId(rs.getLong("USER_ID"))
+                        .feedDate(rs.getTimestamp("FEED_DATE").getTime())
+                        .eventType(rs.getString("EVENT_TYPE"))
+                        .operationType(rs.getString("OPERATION_TYPE"))
+                        .entityId(rs.getLong("ENTITY_ID"))
+                        .build();
+            }
+        }, reviewId);
+    }
     public Map<String, Object> feedToMap(Feed feed) {
         Map<String, Object> values = new HashMap<>();
         values.put("USER_ID", feed.getUserId());

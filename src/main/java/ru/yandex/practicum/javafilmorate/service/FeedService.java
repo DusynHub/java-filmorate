@@ -4,32 +4,53 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.javafilmorate.exceptions.EntityDoesNotExistException;
+import ru.yandex.practicum.javafilmorate.model.Review;
 import ru.yandex.practicum.javafilmorate.model.User;
+import ru.yandex.practicum.javafilmorate.service.reviews.ReviewsService;
 import ru.yandex.practicum.javafilmorate.storage.FeedDao;
 import ru.yandex.practicum.javafilmorate.model.Feed;
 
 import java.util.Collection;
 import java.util.Objects;
-
 @Service
 @Slf4j
 public class FeedService {
     private final FeedDao feedStorage;
     private final UserService userService;
+    private final ReviewsService reviewsService;
     @Autowired
-    public FeedService(FeedDao feedStorage, UserService userService) {
+    public FeedService(FeedDao feedStorage, UserService userService, ReviewsService reviewsService) {
         this.feedStorage = feedStorage;
         this.userService = userService;
+        this.reviewsService = reviewsService;
     }
 
-    public void addFeed(String methodName, Object[] parametrs) {
+    public void addFeed(String methodName, Object[] parameters) {
         Feed newFeed;
-        if (methodName.contains("like")) {
-            newFeed = createFeed(methodName, (Long) parametrs[1], (Long) parametrs[0]);
+        if (parameters[0] instanceof Review){
+            Review review = (Review) parameters[0];
+            newFeed = createFeed(methodName, review.getUserId(), review.getReviewId());
         } else {
-            newFeed = createFeed(methodName, (Long) parametrs[0], (Long) parametrs[1]);
+            if (methodName.contains("like")) {
+                newFeed = createFeed(methodName, (Long) parameters[1], (Long) parameters[0]);
+            } else {
+                newFeed = createFeed(methodName, (Long) parameters[0], (Long) parameters[1]);
+            }
         }
         feedStorage.addFeed(newFeed);
+        log.info("Добавлена запись в журнал : {}", newFeed);
+    }
+
+    // добавляем запись в фид по удалению ревью
+    public void addFeed(String methodName, Long reviewId) {
+        // проверяем что была предыдущая запись в фид
+        Feed feed = feedStorage.findFeedByEntityId(reviewId);
+        Review review = reviewsService.getReviewById(reviewId);
+        if (!Objects.isNull(feed) && !Objects.isNull(review)) {
+            feed = createFeed(methodName, feed.getUserId(), feed.getEntityId());
+            feedStorage.addFeed(feed);
+            log.info("Добавлена запись в журнал об удалении ревью: {}", reviewId);
+        }
     }
 
     public Collection<Feed> getFeed(Long userId, Integer limit) {

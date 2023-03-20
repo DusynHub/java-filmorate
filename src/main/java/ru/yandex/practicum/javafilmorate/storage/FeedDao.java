@@ -8,4 +8,6 @@ public interface FeedDao {
     Collection<Feed> getFeed(Long userId, Integer limit);
 
     void addFeed(Feed feed);
+
+    Feed findFeedByEntityId(Long reviewId);
 }
