@@ -176,5 +176,17 @@ public class FilmDbStorageDao implements FilmStorage {
 
         return jdbcTemplate.query(sql, (ResultSet rs, int rowNum) -> Film.makeFilm(rs), id);
     }
+
+    @Override
+    public List<Film> getCommonFilms(long userId, long friendId) {
+        String sql = (
+                "SELECT f.id, f.name, f.description, f.release_date, f.duration, f.mpa, f.rate, f.LIKES_AMOUNT " +
+                        "FROM film f\n" +
+                        "INNER JOIN likes l ON f.id = l.film_id\n" +
+                        "WHERE l.user_id IN (?,?) " +
+                        "ORDER BY f.LIKES_AMOUNT DESC\n"
+        );
+        return jdbcTemplate.query(sql, (rs, rowNum) -> Film.makeFilm(rs),userId, friendId);
+    }
 }
 

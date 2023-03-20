@@ -164,4 +164,15 @@ public class FilmService {
         });
         return filmList;
     }
+
+    public List<Film> getCommonFilms(long userId, long friendId){
+        List<Film> films = filmStorage.getCommonFilms(userId, friendId);
+        films.forEach((film) -> {
+            film.setLikes(likeDao.getFilmLikes(film.getId()));
+            film.setGenres(filmGenreDao.getFilmGenre(film.getId()));
+            film.setMpa(mpaDao.getMpaById(film.getMpa().getId()));
+            film.setDirectors(filmDirectorDao.getFilmDirector(film.getId()));
+        });
+        return films;
+    }
 }
