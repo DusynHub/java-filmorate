@@ -126,29 +126,4 @@ public class FilmService {
         });
         return films;
     }
-
-    public List<Film> getSearchFilms(String query, List<String>titleOrDirector) {
-        String substring = query.toLowerCase();
-        String by1 = titleOrDirector.get(0);
-        String by2 = titleOrDirector.get(1);
-        if (by1.equals("title")) {
-            if (by2.equals("director")) {
-                //поиска по title & director
-                log.debug("Поиск '{}' по названиям фильмов и режиссерам", substring);
-                return filmStorage.getSearchFilmsByTitleAndDirector(substring);
-            } else {
-                //поиск по title
-                log.debug("Поиск '{}' по названию фильма", substring);
-                return filmStorage.getSearchFilmsByTitle(substring);
-            }
-        } else if (by2.equals("title")) {
-            //поиск по title & director
-            log.debug("Поиск '{}' по названиям фильмов и режиссерам", substring);
-            return filmStorage.getSearchFilmsByTitleAndDirector(substring);
-        } else {
-            //поиск по director
-            log.debug("Поиск '{}' по режиссеру", substring);
-            return filmStorage.getSearchFilmsByDirector(substring);
-        }
-    }
 }

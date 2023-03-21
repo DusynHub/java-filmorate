@@ -62,20 +62,4 @@ public class FilmController {
         return filmService.getMostLikedFilmsFromStorage(count);
     }
 
-    // GET /films/search?query=крад&by=director,title
-
-    //   запросы из тестов
-    //   GET/films/search?query=upDatE&by=title,director
-    //   GET/films/search?query=не найти&by=director,title
-    //   GET/films/search?query=UPdat&by=title
-    //   GET/films/search?query=upDATE&by=director
-    //   Проверить нужно ли применять toLowerCase для query
-
-    @GetMapping("/films/search")
-    public List<Film> getSearchFilms(
-            @RequestParam(name = "query") String query,
-            @RequestParam(name = "by") List<String> titleOrDirector) {
-        log.info("Получен запрос 'GET/films/search?query = {} & by = {} ", query, titleOrDirector);
-        return filmService.getSearchFilms(query,titleOrDirector);
-    }
 }

@@ -64,6 +64,11 @@ public class UserService {
         return userStorage.getUser(id);
     }
 
+    public User deleteUserById(Long id) {
+        checkIsUserIdNegative(id);
+        return userStorage.removeUser(id);
+    }
+
     public void addUsersToFriendsInStorage(long id, long friendId) {
         checkIsUserIdNegative(id);
         checkIsUserIdNegative(friendId);

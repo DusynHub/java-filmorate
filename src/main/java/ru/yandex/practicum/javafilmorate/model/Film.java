@@ -38,6 +38,7 @@ public class Film  {
     private Mpa mpa;
     private List<Genre> genres;
     private int likesAmount;
+    private List<Director> directors;
 
     public static Film makeFilm(ResultSet rs) throws SQLException {
         long id = rs.getLong("id");

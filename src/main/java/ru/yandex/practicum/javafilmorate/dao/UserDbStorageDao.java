@@ -71,9 +71,11 @@ public class UserDbStorageDao implements UserStorage {
     @Override
     public User removeUser(Long id) {
         User user = getUser(id);
-        String sql = "DELETE FROM USERS \n" +
-                     "WHERE id = ?";
-        jdbcTemplate.update(sql, id);
+        jdbcTemplate.update("DELETE FROM FRIENDSHIP WHERE FRIEND1_ID = ? || FRIEND2_ID = ?", id, id);
+        jdbcTemplate.update("DELETE FROM FEED_LIST WHERE USER_ID = ?", id);
+        jdbcTemplate.update("DELETE FROM LIKES WHERE USER_ID = ?", id);
+        jdbcTemplate.update("DELETE FROM REVIEWS WHERE USER_ID = ?", id);
+        jdbcTemplate.update("DELETE FROM USERS WHERE ID = ?", id);
         return user;
     }
 
