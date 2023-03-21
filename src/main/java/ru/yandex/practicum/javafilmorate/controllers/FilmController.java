@@ -62,4 +62,12 @@ public class FilmController {
         return filmService.getMostLikedFilmsFromStorage(count);
     }
 
+    @GetMapping("/search")
+    public List<Film> getSearchFilms(
+            @RequestParam(name = "query") String query,
+            @RequestParam(name = "by") List<String> titleOrDirector) {
+        log.info("Получен запрос 'GET/films/search?query = {} & by = {} ", query, titleOrDirector);
+        return filmService.getSearchFilms(query,titleOrDirector);
+    }
+
 }

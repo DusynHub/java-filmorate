@@ -9,14 +9,19 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.javafilmorate.exceptions.EntityDoesNotExistException;
+import ru.yandex.practicum.javafilmorate.model.Director;
 import ru.yandex.practicum.javafilmorate.model.Film;
+import ru.yandex.practicum.javafilmorate.model.Genre;
+import ru.yandex.practicum.javafilmorate.model.Mpa;
 import ru.yandex.practicum.javafilmorate.storage.FilmStorage;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.List;
-import java.util.Objects;
+import java.sql.SQLException;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.util.*;
 
 @Slf4j
 @Component
@@ -124,5 +129,119 @@ public class FilmDbStorageDao implements FilmStorage {
                 );
         return jdbcTemplate.query(sql, (rs, rowNum) ->  Film.makeFilm(rs));
     }
+
+    @Override
+    public List<Film> getDirectorFilms(long id, String sortBy) {
+        return null;
+    }
+
+    /*@Override
+    public List<Film> getSearchFilmsByTitleAndDirector(String substring) {
+        //String sub = "'%" + substring + "%'";
+        //System.out.println(sub);
+        String sql = "SELECT F.ID, F.NAME, F.DESCRIPTION, F.RELEASE_DATE, F.DURATION, F.MPA, F.RATE, F.LIKES_AMOUNT \n" +
+                "FROM FILM AS F\n" +
+                "LEFT JOIN FILM_DIRECTOR AS FD ON F.ID = FD.FILM_ID\n" +
+                "LEFT JOIN DIRECTOR AS D ON FD.DIRECTOR_ID = D.ID\n" +
+                "WHERE (F.NAME LIKE ? AND D.NAME LIKE ?)\n" +
+                "ORDER BY F.LIKES_AMOUNT DESC";
+        System.out.println(sql);
+        return jdbcTemplate.query(sql, (rs, rowNum) ->  Film.makeFilm(rs), "%" + substring + "%", "%" + substring + "%");
+    }
+
+    @Override
+    public List<Film> getSearchFilmsByTitle(String substring) {
+        //String sub = "'%" + substring + "%'";
+        //System.out.println(sub);
+        String sql ="SELECT F.ID, F.NAME, F.DESCRIPTION, F.RELEASE_DATE, F.DURATION, F.MPA, F.RATE, F.LIKES_AMOUNT \n" +
+                "FROM FILM AS F\n" +
+                "WHERE F.NAME LIKE ?\n" +
+                "ORDER BY F.LIKES_AMOUNT DESC";
+
+        System.out.println(sql);
+        return jdbcTemplate.query(sql, (rs, rowNum) ->  Film.makeFilm(rs), "%" + substring + "%" );
+    }
+
+    @Override
+    public List<Film> getSearchFilmsByDirector(String substring) {
+        //String sub = "'%" + substring + "%'";
+        //System.out.println(sub);
+        String sql = "SELECT F.ID, F.NAME, F.DESCRIPTION, F.RELEASE_DATE, F.DURATION, F.MPA, F.RATE, F.LIKES_AMOUNT \n" +
+                "FROM FILM AS F\n" +
+                "LEFT JOIN FILM_DIRECTOR AS FD ON F.ID = FD.FILM_ID\n" +
+                "LEFT JOIN DIRECTOR AS D ON FD.DIRECTOR_ID = D.ID\n" +
+                "WHERE D.NAME LIKE ?\n" +
+                "ORDER BY F.LIKES_AMOUNT DESC";
+        System.out.println(sql);
+        return jdbcTemplate.query(sql, (rs, rowNum) ->  Film.makeFilm(rs), "%" + substring + "%");
+        //return jdbcTemplate.query(sql, this::mapRowToFilm);
+    }*/
+
+    @Override
+    public List<Film> getSearchFilmsByTitleAndDirector(String substring) {
+        String sub = "'%" + substring + "%'";
+        System.out.println(sub);
+        String sql = String.format("SELECT F.ID, F.NAME, F.DESCRIPTION, F.RELEASE_DATE, F.DURATION, F.MPA, F.RATE, F.LIKES_AMOUNT \n" +
+                "FROM FILM AS F\n" +
+                "LEFT JOIN FILM_DIRECTOR AS FD ON F.ID = FD.FILM_ID\n" +
+                "LEFT JOIN DIRECTOR AS D ON FD.DIRECTOR_ID = D.ID\n" +
+                "WHERE (F.NAME ILIKE %s AND D.NAME ILIKE %s)\n" +
+                "ORDER BY F.LIKES_AMOUNT DESC", sub, sub);
+        System.out.println(sql);
+        return jdbcTemplate.query(sql, (rs, rowNum) ->  Film.makeFilm(rs));
+    }
+
+    /*@Override
+    public List<Film> getSearchFilmsByTitle(String substring) {
+        String sub = "'%" + substring + "%'";
+        System.out.println(sub);
+        String sql = String.format("SELECT F.ID, F.NAME, F.DESCRIPTION, F.RELEASE_DATE, F.DURATION, F.MPA, F.RATE, F.LIKES_AMOUNT \n" +
+                "FROM FILM AS F\n" +
+                "WHERE F.NAME LIKE %s\n" +
+                "ORDER BY F.LIKES_AMOUNT DESC", sub);
+        System.out.println(sql);
+        return jdbcTemplate.query(sql, (rs, rowNum) ->  Film.makeFilm(rs));
+    }*/
+
+    @Override
+    public List<Film> getSearchFilmsByTitle(String substring) {
+        String sub = "'%" + substring + "%'";
+        System.out.println(sub);
+        String sql = String.format("SELECT F.ID, F.NAME, F.DESCRIPTION, F.RELEASE_DATE, F.DURATION, F.MPA, F.RATE, F.LIKES_AMOUNT \n" +
+                "FROM FILM AS F\n" +
+                "WHERE F.NAME ILIKE %s\n" +
+                "ORDER BY F.LIKES_AMOUNT DESC", sub);
+        System.out.println(sql);
+        return jdbcTemplate.query(sql, (rs, rowNum) ->  Film.makeFilm(rs));
+    }
+
+    @Override
+    public List<Film> getSearchFilmsByDirector(String substring) {
+        String sub = "'%" + substring + "%'";
+        System.out.println(sub);
+        String sql = String.format("SELECT F.ID, F.NAME, F.DESCRIPTION, F.RELEASE_DATE, F.DURATION, F.MPA, F.RATE, F.LIKES_AMOUNT \n" +
+                "FROM FILM AS F\n" +
+                "LEFT JOIN FILM_DIRECTOR AS FD ON F.ID = FD.FILM_ID\n" +
+                "LEFT JOIN DIRECTOR AS D ON FD.DIRECTOR_ID = D.ID\n" +
+                "WHERE D.NAME ILIKE %s\n" +
+                "ORDER BY F.LIKES_AMOUNT DESC", sub);
+        System.out.println(sql);
+        return jdbcTemplate.query(sql, (rs, rowNum) ->  Film.makeFilm(rs));
+        //return jdbcTemplate.query(sql, this::mapRowToFilm);
+    }
+
+    /*private Film mapRowToFilm(ResultSet rs, int rowNum) throws SQLException {
+        Film film = new Film(rs.getLong("id")
+                , rs.getString("name")
+                , rs.getString("description")
+                , rs.getDate("release_date").toLocalDate()
+                , rs.getInt("duration")
+                , new Mpa(rs.getInt("mpa"))
+                , rs.getInt("rate")
+                , rs.getInt("LIKES_AMOUNT"));
+        return film;
+    }*/
+
+
 }
 

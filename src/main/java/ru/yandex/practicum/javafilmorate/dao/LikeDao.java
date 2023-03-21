@@ -30,8 +30,9 @@ public class LikeDao {
     }
 
     public void putLike(long filmId, long userId){
-        String sql = "INSERT INTO LIKES (FILM_ID, USER_ID) " +
-                     "VALUES (?,?)";
+        String sql =    "MERGE INTO LIKES l USING (VALUES (?,?)) s(filmId, userId) \n" +
+                "ON l.FILM_ID = S.filmId AND l.USER_ID = S.userId \n" +
+                "WHEN NOT MATCHED THEN INSERT VALUES ( S.filmId, S.userId) ";
         try{
             jdbcTemplate.update(sql, filmId, userId);
         } catch(DataIntegrityViolationException e) {
