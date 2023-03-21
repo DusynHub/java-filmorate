@@ -30,13 +30,13 @@ public class FilmService {
 
 
     public FilmService(@Qualifier("filmStorageDb") FilmStorage filmStorage
-            , @Qualifier("userStorageDb") UserStorage userStorage
-            , LikeDao likeDao
-            , FilmGenreDao filmGenreDao
-            , FilmDirectorDao filmDirectorDao
-            , GenreDao genreDao
-            , MpaDao mpaDao
-            , DirectorDao directorDao) {
+                        , @Qualifier("userStorageDb") UserStorage userStorage
+                        , LikeDao likeDao
+                        , FilmGenreDao filmGenreDao
+                        , FilmDirectorDao filmDirectorDao
+                        , GenreDao genreDao
+                        , MpaDao mpaDao
+                        , DirectorDao directorDao) {
         this.filmStorage = filmStorage;
         this.likeDao = likeDao;
         this.filmGenreDao = filmGenreDao;
@@ -140,39 +140,15 @@ public class FilmService {
         likeDao.deleteLike(id, userId);
     }
 
-    public List<Film> getMostPopularsFilmsByGenreByYear(int count, Long genreId, Integer year) {
-        List<Film> films;
-        if (genreId != null && year != null) {
-            if (genreDao.getGenreById(genreId) == null) {
-                throw new EntityDoesNotExistException(String.format(
-                        "Жанр с идентификатором %d не найден.", genreId));
-            }
-            films = filmStorage.getMostPopularsFilmsByGenreByYear(count, genreId, year);
-            setForFilms(films);
-        } else if (genreId == null && year != null) {
-            films = filmStorage.getMostPopularsFilmsByYear(count, year);
-            setForFilms(films);
-        } else if (year == null && genreId != null) {
-            if (genreDao.getGenreById(genreId) == null) {
-                throw new EntityDoesNotExistException(String.format(
-                        "Жанр с идентификатором %d не найден.", genreId));
-            }
-            films = filmStorage.getMostPopularsFilmsByGenre(count, genreId);
-            setForFilms(films);
-        } else {
-            films = filmStorage.getMostLikedFilms(count);
-            setForFilms(films);
-        }
-        return films;
-    }
-
-    private void setForFilms(List<Film> films) {
+    public List<Film> getMostLikedFilmsFromStorage(int count) {
+        List<Film> films = filmStorage.getMostLikedFilms(count);
         films.forEach((film) -> {
             film.setLikes(likeDao.getFilmLikes(film.getId()));
             film.setGenres(filmGenreDao.getFilmGenre(film.getId()));
             film.setMpa(mpaDao.getMpaById(film.getMpa().getId()));
             film.setDirectors(filmDirectorDao.getFilmDirector(film.getId()));
         });
+        return films;
     }
 
     public List<Film> getDirectorFilms(long id, String sortBy) {
