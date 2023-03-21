@@ -20,4 +20,9 @@ public interface FilmStorage {
 
      public List<Film> getMostLikedFilms(int limit);
 
+     List<Film> getSearchFilmsByTitleAndDirector(String substring);
+
+     List<Film> getSearchFilmsByTitle(String substring);
+
+     List<Film> getSearchFilmsByDirector(String substring);
 }

@@ -124,5 +124,37 @@ public class FilmDbStorageDao implements FilmStorage {
                 );
         return jdbcTemplate.query(sql, (rs, rowNum) ->  Film.makeFilm(rs));
     }
+
+    @Override
+    public List<Film> getSearchFilmsByTitleAndDirector(String substring) {
+        String sub = "'%" + substring + "%'";
+        String sql = String.format("SELECT id, name, description, release_date, duration, mpa, rate, LIKES_AMOUNT \n" +
+                "FROM FILM LEFT JOIN FILM_DIRECTOR AS FD ON FILM.FILM_ID = FD.FILM_ID\n" +
+                "LEFT JOIN DIRECTOR AS D ON FD.DIRECTOR_ID = D.ID\n" +
+                "WHERE (FILM.NAME LIKE %s AND D.NAME LIKE %s)\n" +
+                "ORDER BY LIKES_AMOUNT DESC", sub, sub);
+        return jdbcTemplate.query(sql, (rs, rowNum) ->  Film.makeFilm(rs));
+    }
+
+    @Override
+    public List<Film> getSearchFilmsByTitle(String substring) {
+        String sub = "'%" + substring + "%'";
+        String sql = String.format("SELECT id, name, description, release_date, duration, mpa, rate, LIKES_AMOUNT \n" +
+                "FROM FILM\n" +
+                "WHERE NAME LIKE %s\n" +
+                "ORDER BY LIKES_AMOUNT DESC", sub);
+        return jdbcTemplate.query(sql, (rs, rowNum) ->  Film.makeFilm(rs));
+    }
+
+    @Override
+    public List<Film> getSearchFilmsByDirector(String substring) {
+        String sub = "'%" + substring + "%'";
+        String sql = String.format("SELECT id, name, description, release_date, duration, mpa, rate, LIKES_AMOUNT \n" +
+                "FROM FILM LEFT JOIN FILM_DIRECTOR AS FD ON FILM.FILM_ID = FD.FILM_ID\n" +
+                "LEFT JOIN DIRECTOR AS D ON FD.DIRECTOR_ID = D.ID\n" +
+                "WHERE D.NAME LIKE %s\n" +
+                "ORDER BY LIKES_AMOUNT DESC", sub);
+        return jdbcTemplate.query(sql, (rs, rowNum) ->  Film.makeFilm(rs));
+    }
 }
 
