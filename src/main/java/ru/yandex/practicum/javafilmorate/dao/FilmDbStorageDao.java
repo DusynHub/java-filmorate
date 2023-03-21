@@ -34,29 +34,29 @@ public class FilmDbStorageDao implements FilmStorage {
     @Override
     public Film addFilm(Film film) {
         String sqlQuery = "INSERT INTO FILM ( name, description, release_date, duration, mpa, rate, LIKES_AMOUNT) " +
-                "VALUES (?,?,?,?,?,?,?)";
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-            PreparedStatement stmt = connection.prepareStatement(sqlQuery, new String[]{"id"});
-            stmt.setString(1, film.getName());
-            stmt.setString(2, film.getDescription());
-            stmt.setDate(3, Date.valueOf(film.getReleaseDate()));
-            stmt.setInt(4, (int) film.getDuration().toSeconds());
-            stmt.setInt(5, film.getMpa().getId());
-            stmt.setInt(6, film.getRate());
-            stmt.setInt(7, 0);
-            return stmt;
-        }, keyHolder);
-        long idKey = Objects.requireNonNull(keyHolder.getKey()).longValue();
-        film.setId(idKey);
-        return film;
+                          "VALUES (?,?,?,?,?,?,?)";
+            KeyHolder keyHolder = new GeneratedKeyHolder();
+            jdbcTemplate.update(connection -> {
+                PreparedStatement stmt = connection.prepareStatement(sqlQuery, new String[]{"id"});
+                stmt.setString(1, film.getName());
+                stmt.setString(2, film.getDescription());
+                stmt.setDate(3, Date.valueOf(film.getReleaseDate()));
+                stmt.setInt(4, (int) film.getDuration().toSeconds());
+                stmt.setInt(5, film.getMpa().getId());
+                stmt.setInt(6, film.getRate());
+                stmt.setInt(7, 0);
+                return stmt;
+            }, keyHolder);
+            long idKey = Objects.requireNonNull(keyHolder.getKey()).longValue();
+            film.setId(idKey);
+            return film;
     }
 
     @Override
     public Film getFilm(Long id) {
         String sql = "SELECT id, name, description, release_date, duration, mpa, rate, LIKES_AMOUNT\n" +
-                "FROM film " +
-                "WHERE id = ?";
+                     "FROM film " +
+                     "WHERE id = ?";
         Film film;
         try {
             film = jdbcTemplate.queryForObject(sql,
@@ -86,26 +86,27 @@ public class FilmDbStorageDao implements FilmStorage {
     @Override
     public Film updateFilm(Film film) {
         String sql = "UPDATE FILM " +
-                "SET name = ?, " +
-                "description = ?, " +
-                "release_date = ?, " +
-                "duration = ?, " +
-                "mpa = ?, " +
-                "rate = ? " +
-                " WHERE id = ?";
+                     "SET name = ?, " +
+                         "description = ?, " +
+                         "release_date = ?, " +
+                         "duration = ?, " +
+                         "mpa = ?, "+
+                         "rate = ? " +
+                     " WHERE id = ?";
         int updatedRows = jdbcTemplate.update(sql
-                , film.getName()
-                , film.getDescription()
-                , Date.valueOf(film.getReleaseDate())
-                , (int) film.getDuration().toSeconds()
-                , film.getMpa().getId()
-                , film.getRate()
-                , film.getId());
-        if (updatedRows == 0) {
+                                            , film.getName()
+                                            , film.getDescription()
+                                            , Date.valueOf(film.getReleaseDate())
+                                            , (int) film.getDuration().toSeconds()
+                                            , film.getMpa().getId()
+                                            , film.getRate()
+                                            , film.getId());
+        if(updatedRows == 0){
             log.debug("Фильм с идентификатором {} не найден.", film.getId());
             throw new EntityDoesNotExistException(
                     String.format("Фильм с идентификатором %d не найден.", film.getId()));
         }
+
         if (film.getGenres() != null) {
             filmGenreDao.deleteAllFilmGenresByFilmId(film.getId());
             filmGenreDao.insertFilmGenre(film);
@@ -114,6 +115,7 @@ public class FilmDbStorageDao implements FilmStorage {
                 film.setGenres(filmGenreDao.getFilmGenre(film.getId()));
             }
         }
+
         filmDirectorDao.deleteAllFilmDirectorsByFilmId(film.getId());
 
         if (film.getDirectors() != null) {
@@ -126,36 +128,25 @@ public class FilmDbStorageDao implements FilmStorage {
     @Override
     public List<Film> getAllFilms() {
         String sql = "SELECT id, name, description, release_date, duration, mpa ,rate , LIKES_AMOUNT \n" +
-                "FROM film ";
+                      "FROM film ";
         return jdbcTemplate.query(sql, (rs, rowNum) -> Film.makeFilm(rs));
     }
 
     @Override
     public boolean doesFilmExist(long id) {
         Film film = getFilm(id);
-        return film != null;
+        return film != null ;
     }
 
     @Override
     public List<Film> getMostLikedFilms(int limit) {
-        String sql = ("SELECT id, name, description, release_date, duration, mpa, rate, LIKES_AMOUNT \n" +
+        String sql = String.format(
+                "SELECT id, name, description, release_date, duration, mpa, rate, LIKES_AMOUNT \n" +
                 "FROM FILM\n" +
                 "ORDER BY LIKES_AMOUNT DESC\n" +
-                "LIMIT ?"
-        );
-        return jdbcTemplate.query(sql, (rs, rowNum) -> Film.makeFilm(rs), limit);
-    }
-
-    @Override
-    public List<Film> getMostPopularsFilmsByGenreByYear(int count, long genreId, int year) {
-        String sql = ("SELECT * " +
-                "FROM film f " +
-                "INNER JOIN film_genre fg ON f.id = fg.film_id " +
-                "INNER JOIN genre g ON fg.genre_id = g.id " +
-                "WHERE g.id = ? AND EXTRACT(YEAR FROM CAST(release_date AS date)) = ? " +
-                "LIMIT ?"
-        );
-        return jdbcTemplate.query(sql, (rs, rowNum) -> Film.makeFilm(rs), genreId, year, count);
+                "LIMIT %d", limit
+                );
+        return jdbcTemplate.query(sql, (rs, rowNum) ->  Film.makeFilm(rs));
     }
 
     @Override
@@ -182,28 +173,8 @@ public class FilmDbStorageDao implements FilmStorage {
         } else {
             throw new RuntimeException("Ошибка ввода");
         }
+
         return jdbcTemplate.query(sql, (ResultSet rs, int rowNum) -> Film.makeFilm(rs), id);
     }
-
-    @Override
-    public List<Film> getMostPopularsFilmsByGenre(int count, long genreId) {
-        String sql = ("SELECT * " +
-                "FROM film f " +
-                "INNER JOIN film_genre fg ON f.id = fg.film_id " +
-                "INNER JOIN genre g ON fg.genre_id = g.id " +
-                "WHERE g.id = ? " +
-                "LIMIT ?"
-        );
-        return jdbcTemplate.query(sql, (rs, rowNum) -> Film.makeFilm(rs), genreId, count);
-    }
-
-    @Override
-    public List<Film> getMostPopularsFilmsByYear(int count, int year) {
-        String sql = ("SELECT * " +
-                "FROM film f " +
-                "WHERE EXTRACT(YEAR FROM CAST(release_date AS date)) = ? " +
-                "LIMIT ?"
-        );
-        return jdbcTemplate.query(sql, (rs, rowNum) -> Film.makeFilm(rs), year, count);
-    }
 }
+
