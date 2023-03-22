@@ -41,23 +41,14 @@ public class Film  {
     private List<Director> directors;
 
     public static Film makeFilm(ResultSet rs) throws SQLException {
-        System.out.println(rs);
         long id = rs.getLong("id");
-        System.out.println(id);
         String name = rs.getString("name");
-        System.out.println(name);
         String description = rs.getString("description");
-        System.out.println(description);
         LocalDate releaseDate = rs.getDate("release_date").toLocalDate();
-        System.out.println(releaseDate);
         Duration duration = Duration.ofSeconds(rs.getInt("duration"));
-        System.out.println(duration);
         Mpa mpa = new Mpa(rs.getInt("mpa"));
-        System.out.println(mpa);
         int rate = rs.getInt("rate");
-        System.out.println(rate);
         int likesAmount = rs.getInt("LIKES_AMOUNT");
-        System.out.println(likesAmount);
 
         return builder()
                     .id(id)

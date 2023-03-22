@@ -64,12 +64,16 @@ public class FilmController {
         return filmService.getMostPopularsFilmsByGenreByYear(count, genreId, year);
     }
 
+    @GetMapping("/director/{directorId}")
+    public List<Film> getDirectorFilms(@PathVariable long directorId, @RequestParam String sortBy) {
+        return filmService.getDirectorFilms(directorId, sortBy);
+    }
+
     @GetMapping("/search")
-    public List<Film> getSearchFilms(
-            @RequestParam(name = "query") String query,
-            @RequestParam(name = "by") List<String> titleOrDirector) {
+    public List<Film> getSearchFilms(@RequestParam(name = "query") String query,
+                                     @RequestParam(name = "by") List<String> titleOrDirector) {
         log.info("Получен запрос 'GET/films/search?query = {} & by = {} ", query, titleOrDirector);
-        return filmService.getSearchFilms(query,titleOrDirector);
+        return filmService.getSearchFilms(query, titleOrDirector);
     }
 
 }

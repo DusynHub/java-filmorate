@@ -213,42 +213,35 @@ public class FilmDbStorageDao implements FilmStorage {
     @Override
     public List<Film> getSearchFilmsByTitleAndDirector(String substring) {
         String sub = "'%" + substring + "%'";
-        System.out.println(sub);
         String sql = String.format("SELECT F.ID, F.NAME, F.DESCRIPTION, F.RELEASE_DATE, F.DURATION, F.MPA, F.RATE, F.LIKES_AMOUNT \n" +
                 "FROM FILM AS F\n" +
                 "LEFT JOIN FILM_DIRECTOR AS FD ON F.ID = FD.FILM_ID\n" +
                 "LEFT JOIN DIRECTOR AS D ON FD.DIRECTOR_ID = D.ID\n" +
-                "WHERE (F.NAME ILIKE %s AND D.NAME ILIKE %s)\n" +
+                "WHERE F.NAME ILIKE %s OR D.NAME ILIKE %s\n" +
                 "ORDER BY F.LIKES_AMOUNT DESC", sub, sub);
-        System.out.println(sql);
         return jdbcTemplate.query(sql, (rs, rowNum) ->  Film.makeFilm(rs));
     }
 
     @Override
     public List<Film> getSearchFilmsByTitle(String substring) {
         String sub = "'%" + substring + "%'";
-        System.out.println(sub);
         String sql = String.format("SELECT F.ID, F.NAME, F.DESCRIPTION, F.RELEASE_DATE, F.DURATION, F.MPA, F.RATE, F.LIKES_AMOUNT \n" +
                 "FROM FILM AS F\n" +
                 "WHERE F.NAME ILIKE %s\n" +
                 "ORDER BY F.LIKES_AMOUNT DESC", sub);
-        System.out.println(sql);
         return jdbcTemplate.query(sql, (rs, rowNum) ->  Film.makeFilm(rs));
     }
 
     @Override
     public List<Film> getSearchFilmsByDirector(String substring) {
         String sub = "'%" + substring + "%'";
-        System.out.println(sub);
         String sql = String.format("SELECT F.ID, F.NAME, F.DESCRIPTION, F.RELEASE_DATE, F.DURATION, F.MPA, F.RATE, F.LIKES_AMOUNT \n" +
                 "FROM FILM AS F\n" +
                 "LEFT JOIN FILM_DIRECTOR AS FD ON F.ID = FD.FILM_ID\n" +
                 "LEFT JOIN DIRECTOR AS D ON FD.DIRECTOR_ID = D.ID\n" +
                 "WHERE D.NAME ILIKE %s\n" +
                 "ORDER BY F.LIKES_AMOUNT DESC", sub);
-        System.out.println(sql);
         return jdbcTemplate.query(sql, (rs, rowNum) ->  Film.makeFilm(rs));
-        //return jdbcTemplate.query(sql, this::mapRowToFilm);
     }
 }
 

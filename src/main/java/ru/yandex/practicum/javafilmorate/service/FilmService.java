@@ -195,39 +195,33 @@ public class FilmService {
         });
     }
 
-    public List<Film> getSearchFilms(String query, List<String>titleOrDirector) {
-        String substring = query.toLowerCase();
-        //String substring = query;
-        System.out.println("query = " + substring);
+    public List<Film> getSearchFilms(String substring, List<String>titleOrDirector) {
+        List<Film> films;
         String by1 = titleOrDirector.get(0);
-        System.out.println("by1 = " + by1);
         String by2 = "by";
         if (titleOrDirector.size() > 1) {
             by2  = titleOrDirector.get(1);
-            System.out.println("by2 = " + by2);
         }
         if (by1.equals("title")) {
             if (by2.equals("director")) {
-                //поиск по title & director
-                System.out.println("поиск по title & director");
                 log.info("Поиск '{}' по названиям фильмов и режиссерам", substring);
-                return filmStorage.getSearchFilmsByTitleAndDirector(substring);
+                films = filmStorage.getSearchFilmsByTitleAndDirector(substring);
             } else {
-                //поиск по title
-                System.out.println("поиск по title ");
                 log.info("Поиск '{}' по названию фильма", substring);
-                return filmStorage.getSearchFilmsByTitle(substring);
+                films = filmStorage.getSearchFilmsByTitle(substring);
             }
+            setForFilms(films);
+            return films;
         } else if (by2.equals("title")) {
-            //поиск по title & director
-            System.out.println("поиск по title & director");
             log.info("Поиск '{}' по названиям фильмов и режиссерам", substring);
-            return filmStorage.getSearchFilmsByTitleAndDirector(substring);
+            films = filmStorage.getSearchFilmsByTitleAndDirector(substring);
+            setForFilms(films);
+            return films;
         } else {
-            //поиск по director
-            System.out.println("поиск по director");
             log.info("Поиск '{}' по режиссеру", substring);
-            return filmStorage.getSearchFilmsByDirector(substring);
+            films = filmStorage.getSearchFilmsByDirector(substring);
+            setForFilms(films);
+            return films;
         }
     }
 }
