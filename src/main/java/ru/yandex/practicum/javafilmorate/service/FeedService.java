@@ -85,7 +85,7 @@ public class FeedService {
                 feed.setEventType("LIKE");
                 feed.setOperationType("REMOVE");
                 break;
-            case "createReview":
+            case "addReview":
                 feed.setEventType("REVIEW");
                 feed.setOperationType("ADD");
                 break;
