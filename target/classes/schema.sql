@@ -31,7 +31,7 @@ create table IF NOT EXISTS MPA
 
 create table IF NOT EXISTS FILM
 (
-    ID           BIGINT                 auto_increment,
+    ID           BIGINT auto_increment,
     NAME         CHARACTER VARYING(100) not null,
     DESCRIPTION  CHARACTER VARYING(200),
     RELEASE_DATE DATE,
@@ -71,7 +71,7 @@ create unique index IF NOT EXISTS MPA_ID_UINDEX
 
 create table IF NOT EXISTS USERS
 (
-    ID       BIGINT                 auto_increment,
+    ID       BIGINT auto_increment,
     EMAIL    CHARACTER VARYING(250) not null,
     LOGIN    CHARACTER VARYING(250) not null,
     NAME     CHARACTER VARYING(250),
@@ -119,12 +119,13 @@ create unique index IF NOT EXISTS USER_ID_UINDEX
 
 create table IF NOT EXISTS REVIEWS
 (
-    ID           BIGINT not null,
-    FILM_ID      BIGINT not null,
-    USER_ID      BIGINT not null,
-    CONTENT      CHARACTER VARYING,
-    IS_POSITIVE  BOOLEAN,
-    USEFUL       INTEGER,
+    ID          BIGINT not null auto_increment,
+    FILM_ID     BIGINT not null,
+    USER_ID     BIGINT not null,
+    CONTENT     CHARACTER VARYING,
+    IS_POSITIVE BOOLEAN,
+    USEFUL      INTEGER,
+
     constraint REVIEWS_PK
         primary key (ID),
     constraint REVIEWS_FK
@@ -148,14 +149,15 @@ create table IF NOT EXISTS operation_type
     operation_type ENUM ('ADD', 'REMOVE', 'UPDATE')
 );
 
-create table IF NOT EXISTS  FEED_LIST
+create table IF NOT EXISTS FEED_LIST
 (
-    EVENT_ID   BIGINT not null auto_increment,
-    USER_ID    BIGINT not null,
-    EVENT_TYPE  ENUM ('LIKE', 'REVIEW', 'FRIEND'),
+    EVENT_ID       BIGINT not null auto_increment,
+    USER_ID        BIGINT not null,
+    EVENT_TYPE     ENUM ('LIKE', 'REVIEW', 'FRIEND'),
     OPERATION_TYPE ENUM ('ADD', 'REMOVE', 'UPDATE'),
-    ENTITY_ID BIGINT not null,
-    FEED_DATE TIMESTAMP,
+    ENTITY_ID      BIGINT not null,
+    FEED_DATE      TIMESTAMP,
+
     constraint FEED_LIST_PK
         primary key (EVENT_ID),
     constraint FEED_LIST_FK
@@ -166,7 +168,8 @@ create table IF NOT EXISTS  FEED_LIST
 create unique index IF NOT EXISTS FEED_LIST_ID_UINDEX
     on FEED_LIST (EVENT_ID);
 
-create table IF NOT EXISTS  DIRECTOR
+create table IF NOT EXISTS DIRECTOR
+
 (
     ID   BIGINT not null auto_increment,
     NAME CHARACTER VARYING(250),
@@ -179,7 +182,9 @@ create unique index IF NOT EXISTS DIRECTOR_ID_UINDEX
 
 create table IF NOT EXISTS FILM_DIRECTOR
 (
-    FILM_ID BIGINT not null,
+
+    FILM_ID     BIGINT not null,
+
     DIRECTOR_ID BIGINT not null,
     constraint FILM_DIRECTOR_PK
         primary key (FILM_ID, DIRECTOR_ID),
@@ -193,3 +198,4 @@ create table IF NOT EXISTS FILM_DIRECTOR
 
 create unique index IF NOT EXISTS FILM_DIRECTOR_ID_UINDEX
     on FILM_DIRECTOR (FILM_ID, DIRECTOR_ID);
+
