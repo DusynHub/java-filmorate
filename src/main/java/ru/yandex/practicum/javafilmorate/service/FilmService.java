@@ -200,12 +200,7 @@ public class FilmService {
             throw new EntityDoesNotExistException("Не найден пользователь с одним из данных id" + userId + friendId);
         }
         List<Film> films = filmStorage.getCommonFilms(userId, friendId);
-        films.forEach((film) -> {
-            film.setLikes(likeDao.getFilmLikes(film.getId()));
-            film.setGenres(filmGenreDao.getFilmGenre(film.getId()));
-            film.setMpa(mpaDao.getMpaById(film.getMpa().getId()));
-            film.setDirectors(filmDirectorDao.getFilmDirector(film.getId()));
-        });
+        setForFilms(films);
         return films;
     }
 }
