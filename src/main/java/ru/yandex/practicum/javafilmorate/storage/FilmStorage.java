@@ -22,6 +22,11 @@ public interface FilmStorage {
      public List<Film> getMostLikedFilms(int limit);
      public List<Film> getDirectorFilms(long id, String sortBy);
 
+     public List<Film> getMostPopularsFilmsByGenreByYear(int count, long genreId, int year);
+
+     public List<Film> getMostPopularsFilmsByGenre(int count, long genreId);
+
+     public List<Film> getMostPopularsFilmsByYear(int count, int year);
      public List<Film> getCommonFilms(long userId, long friendId);
 
 }

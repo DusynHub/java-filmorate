@@ -156,13 +156,43 @@ public class FilmService {
             throw new EntityDoesNotExistException("Не найден режиссер с id " + id);
         }
         List<Film> filmList = filmStorage.getDirectorFilms(id, sortBy);
-        filmList.forEach((film) -> {
+        setForFilms(filmList);
+        return filmList;
+    }
+
+    public List<Film> getMostPopularsFilmsByGenreByYear(int count, Long genreId, Integer year) {
+        List<Film> films;
+        if (genreId != null && year != null) {
+            if (genreDao.getGenreById(genreId) == null) {
+                throw new EntityDoesNotExistException(String.format(
+                        "Жанр с идентификатором %d не найден.", genreId));
+            }
+            films = filmStorage.getMostPopularsFilmsByGenreByYear(count, genreId, year);
+            setForFilms(films);
+        } else if (genreId == null && year != null) {
+            films = filmStorage.getMostPopularsFilmsByYear(count, year);
+            setForFilms(films);
+        } else if (year == null && genreId != null) {
+            if (genreDao.getGenreById(genreId) == null) {
+                throw new EntityDoesNotExistException(String.format(
+                        "Жанр с идентификатором %d не найден.", genreId));
+            }
+            films = filmStorage.getMostPopularsFilmsByGenre(count, genreId);
+            setForFilms(films);
+        } else {
+            films = filmStorage.getMostLikedFilms(count);
+            setForFilms(films);
+        }
+        return films;
+    }
+
+    private void setForFilms(List<Film> films) {
+        films.forEach((film) -> {
             film.setLikes(likeDao.getFilmLikes(film.getId()));
             film.setGenres(filmGenreDao.getFilmGenre(film.getId()));
             film.setMpa(mpaDao.getMpaById(film.getMpa().getId()));
             film.setDirectors(filmDirectorDao.getFilmDirector(film.getId()));
         });
-        return filmList;
     }
 
     public List<Film> getCommonFilms(long userId, long friendId){

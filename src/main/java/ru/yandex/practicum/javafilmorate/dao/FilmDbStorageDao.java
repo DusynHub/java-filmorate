@@ -140,13 +140,12 @@ public class FilmDbStorageDao implements FilmStorage {
 
     @Override
     public List<Film> getMostLikedFilms(int limit) {
-        String sql = String.format(
-                "SELECT id, name, description, release_date, duration, mpa, rate, LIKES_AMOUNT \n" +
+        String sql = ("SELECT id, name, description, release_date, duration, mpa, rate, LIKES_AMOUNT \n" +
                 "FROM FILM\n" +
                 "ORDER BY LIKES_AMOUNT DESC\n" +
-                "LIMIT %d", limit
-                );
-        return jdbcTemplate.query(sql, (rs, rowNum) ->  Film.makeFilm(rs));
+                "LIMIT ?"
+        );
+        return jdbcTemplate.query(sql, (rs, rowNum) -> Film.makeFilm(rs), limit);
     }
 
     @Override
@@ -176,6 +175,42 @@ public class FilmDbStorageDao implements FilmStorage {
 
         return jdbcTemplate.query(sql, (ResultSet rs, int rowNum) -> Film.makeFilm(rs), id);
     }
+
+    @Override
+    public List<Film> getMostPopularsFilmsByGenreByYear(int count, long genreId, int year) {
+        String sql = ("SELECT * " +
+                "FROM film f " +
+                "INNER JOIN film_genre fg ON f.id = fg.film_id " +
+                "INNER JOIN genre g ON fg.genre_id = g.id " +
+                "WHERE g.id = ? AND EXTRACT(YEAR FROM CAST(release_date AS date)) = ? " +
+                "LIMIT ?"
+        );
+        return jdbcTemplate.query(sql, (rs, rowNum) -> Film.makeFilm(rs), genreId, year, count);
+    }
+
+    @Override
+    public List<Film> getMostPopularsFilmsByGenre(int count, long genreId) {
+        String sql = ("SELECT * " +
+                "FROM film f " +
+                "INNER JOIN film_genre fg ON f.id = fg.film_id " +
+                "INNER JOIN genre g ON fg.genre_id = g.id " +
+                "WHERE g.id = ? " +
+                "LIMIT ?"
+        );
+        return jdbcTemplate.query(sql, (rs, rowNum) -> Film.makeFilm(rs), genreId, count);
+    }
+
+    @Override
+    public List<Film> getMostPopularsFilmsByYear(int count, int year) {
+        String sql = ("SELECT * " +
+                "FROM film f " +
+                "WHERE EXTRACT(YEAR FROM CAST(release_date AS date)) = ? " +
+                "LIMIT ?"
+        );
+        return jdbcTemplate.query(sql, (rs, rowNum) -> Film.makeFilm(rs), year, count);
+    }
+}
+
 
     @Override
     public List<Film> getCommonFilms(long userId, long friendId) {
