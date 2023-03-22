@@ -9,12 +9,10 @@ import lombok.*;
 @Builder
 public class Like {
 
-    private long id;
     private long filmId;
     private long userId;
 
-    public Like(long id, long filmId, long userId) {
-        this.id = id;
+    public Like(long filmId, long userId) {
         this.filmId = filmId;
         this.userId = userId;
     }

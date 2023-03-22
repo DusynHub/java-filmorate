@@ -27,6 +27,7 @@ public interface FilmStorage {
      public List<Film> getMostPopularsFilmsByGenre(int count, long genreId);
 
      public List<Film> getMostPopularsFilmsByYear(int count, int year);
+     public List<Film> getCommonFilms(long userId, long friendId);
 
      List<Film> getSearchFilmsByTitleAndDirector(String substring);
 

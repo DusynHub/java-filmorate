@@ -133,6 +133,8 @@ public class FilmService {
     }
 
     public void likeFilmInStorage(long id, long userId) {
+        filmStorage.getFilm(id);
+        userStorage.getUser(userId);
         likeDao.putLike(id, userId);
     }
 
@@ -223,5 +225,15 @@ public class FilmService {
             setForFilms(films);
             return films;
         }
+    }
+}
+
+    public List<Film> getCommonFilms(long userId, long friendId){
+        if (userStorage.getUser(userId) == null || userStorage.getUser(friendId) == null) {
+            throw new EntityDoesNotExistException("Не найден пользователь с одним из данных id" + userId + friendId);
+        }
+        List<Film> films = filmStorage.getCommonFilms(userId, friendId);
+        setForFilms(films);
+        return films;
     }
 }
