@@ -197,6 +197,36 @@ public class FilmService {
         });
     }
 
+    public List<Film> getSearchFilms(String substring, List<String>titleOrDirector) {
+        List<Film> films;
+        String by1 = titleOrDirector.get(0);
+        String by2 = "by";
+        if (titleOrDirector.size() > 1) {
+            by2  = titleOrDirector.get(1);
+        }
+        if (by1.equals("title")) {
+            if (by2.equals("director")) {
+                log.info("Поиск '{}' по названиям фильмов и режиссерам", substring);
+                films = filmStorage.getSearchFilmsByTitleAndDirector(substring);
+            } else {
+                log.info("Поиск '{}' по названию фильма", substring);
+                films = filmStorage.getSearchFilmsByTitle(substring);
+            }
+            setForFilms(films);
+            return films;
+        } else if (by2.equals("title")) {
+            log.info("Поиск '{}' по названиям фильмов и режиссерам", substring);
+            films = filmStorage.getSearchFilmsByTitleAndDirector(substring);
+            setForFilms(films);
+            return films;
+        } else {
+            log.info("Поиск '{}' по режиссеру", substring);
+            films = filmStorage.getSearchFilmsByDirector(substring);
+            setForFilms(films);
+            return films;
+        }
+    }
+
     public List<Film> getCommonFilms(long userId, long friendId){
         if (userStorage.getUser(userId) == null || userStorage.getUser(friendId) == null) {
             throw new EntityDoesNotExistException("Не найден пользователь с одним из данных id" + userId + friendId);
