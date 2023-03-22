@@ -11,17 +11,15 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.javafilmorate.exceptions.EntityDoesNotExistException;
 import ru.yandex.practicum.javafilmorate.model.Director;
 import ru.yandex.practicum.javafilmorate.model.Film;
+import ru.yandex.practicum.javafilmorate.model.FilmSort;
 import ru.yandex.practicum.javafilmorate.model.Genre;
-import ru.yandex.practicum.javafilmorate.model.Mpa;
 import ru.yandex.practicum.javafilmorate.storage.FilmStorage;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.time.Duration;
-import java.time.LocalDate;
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Component
@@ -30,6 +28,8 @@ import java.util.*;
 public class FilmDbStorageDao implements FilmStorage {
 
     private final JdbcTemplate jdbcTemplate;
+    private final FilmGenreDao filmGenreDao;
+    private final FilmDirectorDao filmDirectorDao;
 
     @Override
     public Film addFilm(Film film) {
@@ -71,12 +71,15 @@ public class FilmDbStorageDao implements FilmStorage {
         }
     }
 
+    // Проверка таблиц по названиям. При удалении фильма удаляем все его появления в других таблицах
     @Override
     public Film removeFilm(Long id) {
         Film film = getFilm(id);
-        String sql = "DELETE FROM FILM \n" +
-                     "WHERE id = ?";
-        jdbcTemplate.update(sql, id);
+        jdbcTemplate.update("DELETE FROM FILM_GENRE WHERE film_id = ?", id);
+        jdbcTemplate.update("DELETE FROM FILM_DIRECTOR WHERE film_id = ?", id);
+        jdbcTemplate.update("DELETE FROM LIKES WHERE film_id = ?", id);
+        jdbcTemplate.update("DELETE FROM REVIEWS WHERE film_id = ?", id);
+        jdbcTemplate.update("DELETE FROM FILM WHERE id = ?", id);
         return film;
     }
 
@@ -103,6 +106,22 @@ public class FilmDbStorageDao implements FilmStorage {
             throw new EntityDoesNotExistException(
                     String.format("Фильм с идентификатором %d не найден.", film.getId()));
         }
+
+        if (film.getGenres() != null) {
+            filmGenreDao.deleteAllFilmGenresByFilmId(film.getId());
+            filmGenreDao.insertFilmGenre(film);
+        } else {
+            if (filmGenreDao.getFilmGenre(film.getId()) != null) {
+                film.setGenres(filmGenreDao.getFilmGenre(film.getId()));
+            }
+        }
+
+        filmDirectorDao.deleteAllFilmDirectorsByFilmId(film.getId());
+
+        if (film.getDirectors() != null) {
+            filmDirectorDao.insertFilmDirector(film);
+        }
+
         return film;
     }
 
@@ -121,61 +140,75 @@ public class FilmDbStorageDao implements FilmStorage {
 
     @Override
     public List<Film> getMostLikedFilms(int limit) {
-        String sql = String.format(
-                "SELECT id, name, description, release_date, duration, mpa, rate, LIKES_AMOUNT \n" +
+        String sql = ("SELECT id, name, description, release_date, duration, mpa, rate, LIKES_AMOUNT \n" +
                 "FROM FILM\n" +
                 "ORDER BY LIKES_AMOUNT DESC\n" +
-                "LIMIT %d", limit
-                );
-        return jdbcTemplate.query(sql, (rs, rowNum) ->  Film.makeFilm(rs));
+                "LIMIT ?"
+        );
+        return jdbcTemplate.query(sql, (rs, rowNum) -> Film.makeFilm(rs), limit);
     }
 
     @Override
     public List<Film> getDirectorFilms(long id, String sortBy) {
-        return null;
-    }
+        String sql;
+        if (sortBy.equals("year")) {
+            sql = "SELECT F.*, FD.DIRECTOR_ID " +
+                    "FROM FILM_DIRECTOR FD " +
+                    "JOIN FILM F on F.ID = FD.FILM_ID " +
+                    "WHERE DIRECTOR_ID = ? " +
+                    "GROUP BY f.ID, F.RELEASE_DATE " +
+                    "ORDER BY F.RELEASE_DATE";
+        } else if (sortBy.equals("likes")) {
+            sql = "SELECT f.*, FD.DIRECTOR_ID " +
+                    "FROM FILM_DIRECTOR FD " +
+                    "JOIN FILM F on F.ID = FD.FILM_ID " +
+                    "LEFT JOIN LIKES fl on F.ID = fl.film_id " +
+                    "WHERE DIRECTOR_ID = ? " +
+                    "GROUP BY f.ID, fl.film_id IN ( " +
+                    "SELECT film_id " +
+                    "FROM LIKES " +
+                    ") " +
+                    "ORDER BY COUNT(fl.film_id) DESC";
+        } else {
+            throw new RuntimeException("Ошибка ввода");
+        }
 
-    /*@Override
-    public List<Film> getSearchFilmsByTitleAndDirector(String substring) {
-        //String sub = "'%" + substring + "%'";
-        //System.out.println(sub);
-        String sql = "SELECT F.ID, F.NAME, F.DESCRIPTION, F.RELEASE_DATE, F.DURATION, F.MPA, F.RATE, F.LIKES_AMOUNT \n" +
-                "FROM FILM AS F\n" +
-                "LEFT JOIN FILM_DIRECTOR AS FD ON F.ID = FD.FILM_ID\n" +
-                "LEFT JOIN DIRECTOR AS D ON FD.DIRECTOR_ID = D.ID\n" +
-                "WHERE (F.NAME LIKE ? AND D.NAME LIKE ?)\n" +
-                "ORDER BY F.LIKES_AMOUNT DESC";
-        System.out.println(sql);
-        return jdbcTemplate.query(sql, (rs, rowNum) ->  Film.makeFilm(rs), "%" + substring + "%", "%" + substring + "%");
-    }
-
-    @Override
-    public List<Film> getSearchFilmsByTitle(String substring) {
-        //String sub = "'%" + substring + "%'";
-        //System.out.println(sub);
-        String sql ="SELECT F.ID, F.NAME, F.DESCRIPTION, F.RELEASE_DATE, F.DURATION, F.MPA, F.RATE, F.LIKES_AMOUNT \n" +
-                "FROM FILM AS F\n" +
-                "WHERE F.NAME LIKE ?\n" +
-                "ORDER BY F.LIKES_AMOUNT DESC";
-
-        System.out.println(sql);
-        return jdbcTemplate.query(sql, (rs, rowNum) ->  Film.makeFilm(rs), "%" + substring + "%" );
+        return jdbcTemplate.query(sql, (ResultSet rs, int rowNum) -> Film.makeFilm(rs), id);
     }
 
     @Override
-    public List<Film> getSearchFilmsByDirector(String substring) {
-        //String sub = "'%" + substring + "%'";
-        //System.out.println(sub);
-        String sql = "SELECT F.ID, F.NAME, F.DESCRIPTION, F.RELEASE_DATE, F.DURATION, F.MPA, F.RATE, F.LIKES_AMOUNT \n" +
-                "FROM FILM AS F\n" +
-                "LEFT JOIN FILM_DIRECTOR AS FD ON F.ID = FD.FILM_ID\n" +
-                "LEFT JOIN DIRECTOR AS D ON FD.DIRECTOR_ID = D.ID\n" +
-                "WHERE D.NAME LIKE ?\n" +
-                "ORDER BY F.LIKES_AMOUNT DESC";
-        System.out.println(sql);
-        return jdbcTemplate.query(sql, (rs, rowNum) ->  Film.makeFilm(rs), "%" + substring + "%");
-        //return jdbcTemplate.query(sql, this::mapRowToFilm);
-    }*/
+    public List<Film> getMostPopularsFilmsByGenreByYear(int count, long genreId, int year) {
+        String sql = ("SELECT * " +
+                "FROM film f " +
+                "INNER JOIN film_genre fg ON f.id = fg.film_id " +
+                "INNER JOIN genre g ON fg.genre_id = g.id " +
+                "WHERE g.id = ? AND EXTRACT(YEAR FROM CAST(release_date AS date)) = ? " +
+                "LIMIT ?"
+        );
+        return jdbcTemplate.query(sql, (rs, rowNum) -> Film.makeFilm(rs), genreId, year, count);
+    }
+
+    @Override
+    public List<Film> getMostPopularsFilmsByGenre(int count, long genreId) {
+        String sql = ("SELECT * " +
+                "FROM film f " +
+                "INNER JOIN film_genre fg ON f.id = fg.film_id " +
+                "INNER JOIN genre g ON fg.genre_id = g.id " +
+                "WHERE g.id = ? " +
+                "LIMIT ?"
+        );
+        return jdbcTemplate.query(sql, (rs, rowNum) -> Film.makeFilm(rs), genreId, count);
+    }
+
+    @Override
+    public List<Film> getMostPopularsFilmsByYear(int count, int year) {
+        String sql = ("SELECT * " +
+                "FROM film f " +
+                "WHERE EXTRACT(YEAR FROM CAST(release_date AS date)) = ? " +
+                "LIMIT ?"
+        );
+        return jdbcTemplate.query(sql, (rs, rowNum) -> Film.makeFilm(rs), year, count);
+    }
 
     @Override
     public List<Film> getSearchFilmsByTitleAndDirector(String substring) {
@@ -190,18 +223,6 @@ public class FilmDbStorageDao implements FilmStorage {
         System.out.println(sql);
         return jdbcTemplate.query(sql, (rs, rowNum) ->  Film.makeFilm(rs));
     }
-
-    /*@Override
-    public List<Film> getSearchFilmsByTitle(String substring) {
-        String sub = "'%" + substring + "%'";
-        System.out.println(sub);
-        String sql = String.format("SELECT F.ID, F.NAME, F.DESCRIPTION, F.RELEASE_DATE, F.DURATION, F.MPA, F.RATE, F.LIKES_AMOUNT \n" +
-                "FROM FILM AS F\n" +
-                "WHERE F.NAME LIKE %s\n" +
-                "ORDER BY F.LIKES_AMOUNT DESC", sub);
-        System.out.println(sql);
-        return jdbcTemplate.query(sql, (rs, rowNum) ->  Film.makeFilm(rs));
-    }*/
 
     @Override
     public List<Film> getSearchFilmsByTitle(String substring) {
@@ -229,19 +250,5 @@ public class FilmDbStorageDao implements FilmStorage {
         return jdbcTemplate.query(sql, (rs, rowNum) ->  Film.makeFilm(rs));
         //return jdbcTemplate.query(sql, this::mapRowToFilm);
     }
-
-    /*private Film mapRowToFilm(ResultSet rs, int rowNum) throws SQLException {
-        Film film = new Film(rs.getLong("id")
-                , rs.getString("name")
-                , rs.getString("description")
-                , rs.getDate("release_date").toLocalDate()
-                , rs.getInt("duration")
-                , new Mpa(rs.getInt("mpa"))
-                , rs.getInt("rate")
-                , rs.getInt("LIKES_AMOUNT"));
-        return film;
-    }*/
-
-
 }
 
