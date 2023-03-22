@@ -27,7 +27,7 @@ public class FeedAspect {
         MethodSignature methodSignature = (MethodSignature) jp.getSignature();
         Object[] parameters = jp.getArgs();
         String methodName = methodSignature.getName();
-        log.info("Подписка на событие : {}", methodName);
+        log.info("Подписка на событие после: {}", methodName);
         feedService.addFeed(methodName, parameters);
     }
 
@@ -36,6 +36,7 @@ public class FeedAspect {
         MethodSignature methodSignature = (MethodSignature) jp.getSignature();
         Object[] parameters = jp.getArgs();
         String methodName = methodSignature.getName();
+        log.info("Подписка на событие перед: {}", methodName);
         feedService.addFeed(methodName, (Long) parameters[0]);
     }
 
