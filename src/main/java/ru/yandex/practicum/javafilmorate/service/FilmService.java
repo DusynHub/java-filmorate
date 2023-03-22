@@ -133,6 +133,8 @@ public class FilmService {
     }
 
     public void likeFilmInStorage(long id, long userId) {
+        filmStorage.getFilm(id);
+        userStorage.getUser(userId);
         likeDao.putLike(id, userId);
     }
 
