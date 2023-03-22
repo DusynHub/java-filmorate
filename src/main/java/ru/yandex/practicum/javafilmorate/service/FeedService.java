@@ -29,16 +29,21 @@ public class FeedService {
         Feed newFeed;
         if (parameters[0] instanceof Review){
             Review review = (Review) parameters[0];
-            newFeed = createFeed(methodName, review.getUserId(), review.getReviewId());
+            //newFeed = createFeed(methodName, review.getUserId(), review.getReviewId());
+            if (methodName.equals("updateReview")){
+                newFeed = createFeed(methodName, reviewsService.getReviewById(review.getReviewId()).getUserId(), review.getReviewId());
+            } else {
+                newFeed = createFeed(methodName, review.getUserId(), review.getReviewId());
+            }
         } else {
-            if (methodName.contains("like")) {
+            if (methodName.equals("likeFilm") || methodName.equals("deleteLikeFromFilm")) {
                 newFeed = createFeed(methodName, (Long) parameters[1], (Long) parameters[0]);
             } else {
                 newFeed = createFeed(methodName, (Long) parameters[0], (Long) parameters[1]);
             }
         }
         feedStorage.addFeed(newFeed);
-        log.info("Добавлена запись в журнал : {}", newFeed);
+        log.info("FeedService: Добавлена запись в журнал : {}", newFeed);
     }
 
     // добавляем запись в фид по удалению ревью
@@ -49,7 +54,7 @@ public class FeedService {
         if (!Objects.isNull(feed) && !Objects.isNull(review)) {
             feed = createFeed(methodName, feed.getUserId(), feed.getEntityId());
             feedStorage.addFeed(feed);
-            log.info("Добавлена запись в журнал об удалении ревью: {}", reviewId);
+            log.info("FeedService: Добавлена запись в журнал об удалении ревью: {}", reviewId);
         }
     }
 
@@ -59,6 +64,7 @@ public class FeedService {
             throw new EntityDoesNotExistException(
                     String.format("Пользователь с  id %d не существует.", userId));
         }
+        log.info("FeedService: Получена лента новостей для юзера: {}", user.getId());
         return feedStorage.getFeed(userId,limit);
     }
 

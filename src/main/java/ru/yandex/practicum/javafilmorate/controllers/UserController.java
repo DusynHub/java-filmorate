@@ -87,7 +87,7 @@ public class UserController {
 
     @GetMapping("{id}/feed")
     public Collection<Feed> getFeed(@PathVariable long id,
-                                    @RequestParam(required = false, defaultValue = "10") Integer limit) {
+                                    @RequestParam(required = false, defaultValue = "30") Integer limit) {
         return feedService.getFeed(id, limit);
     }
 }
