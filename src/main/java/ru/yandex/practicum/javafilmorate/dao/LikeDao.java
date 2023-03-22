@@ -30,7 +30,7 @@ public class LikeDao {
     }
 
     public void putLike(long filmId, long userId){
-        String sql =    "MERGE INTO LIKES l USING (VALUES (?,?)) s(filmId, userId) \n" +
+        String sql = "MERGE INTO LIKES l USING (VALUES (?,?)) s(filmId, userId) \n" +
                 "ON l.FILM_ID = S.filmId AND l.USER_ID = S.userId \n" +
                 "WHEN NOT MATCHED THEN INSERT VALUES ( S.filmId, S.userId) ";
         try{
