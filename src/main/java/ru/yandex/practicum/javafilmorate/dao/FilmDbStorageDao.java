@@ -212,39 +212,37 @@ public class FilmDbStorageDao implements FilmStorage {
 
     @Override
     public List<Film> getSearchFilmsByTitleAndDirector(String substring) {
-        String sub = "'%" + substring + "%'";
-        String sql = String.format("SELECT F.ID, F.NAME, F.DESCRIPTION, F.RELEASE_DATE, F.DURATION, F.MPA, F.RATE, F.LIKES_AMOUNT \n" +
-                "FROM FILM AS F\n" +
-                "LEFT JOIN FILM_DIRECTOR AS FD ON F.ID = FD.FILM_ID\n" +
-                "LEFT JOIN DIRECTOR AS D ON FD.DIRECTOR_ID = D.ID\n" +
-                "WHERE F.NAME ILIKE %s OR D.NAME ILIKE %s\n" +
-                "ORDER BY F.LIKES_AMOUNT DESC", sub, sub);
-        return jdbcTemplate.query(sql, (rs, rowNum) ->  Film.makeFilm(rs));
+        String sub = "%" + substring + "%";
+        String sql = "SELECT f.id, f.name, f.description, f.release_date, f.duration, f.mpa, f.rate, f.likes_amount " +
+                "FROM film f " +
+                "LEFT JOIN film_director fd ON f.id = fd.film_id " +
+                "LEFT JOIN director d ON fd.director_id = d.id " +
+                "WHERE f.name ILIKE ? OR d.name ILIKE ? " +
+                "ORDER BY f.likes_amount DESC";
+        return jdbcTemplate.query(sql, (rs, rowNum) ->  Film.makeFilm(rs), sub, sub);
     }
 
     @Override
     public List<Film> getSearchFilmsByTitle(String substring) {
-        String sub = "'%" + substring + "%'";
-        String sql = String.format("SELECT F.ID, F.NAME, F.DESCRIPTION, F.RELEASE_DATE, F.DURATION, F.MPA, F.RATE, F.LIKES_AMOUNT \n" +
-                "FROM FILM AS F\n" +
-                "WHERE F.NAME ILIKE %s\n" +
-                "ORDER BY F.LIKES_AMOUNT DESC", sub);
-        return jdbcTemplate.query(sql, (rs, rowNum) ->  Film.makeFilm(rs));
+        String sub = "%" + substring + "%";
+        String sql = "SELECT f.id, f.name, f.description, f.release_date, f.duration, f.mpa, f.rate, f.likes_amount " +
+                "FROM film f " +
+                "WHERE f.name ILIKE ? " +
+                "ORDER BY f.likes_amount DESC";
+        return jdbcTemplate.query(sql, (rs, rowNum) ->  Film.makeFilm(rs), sub);
     }
 
     @Override
     public List<Film> getSearchFilmsByDirector(String substring) {
-        String sub = "'%" + substring + "%'";
-        String sql = String.format("SELECT F.ID, F.NAME, F.DESCRIPTION, F.RELEASE_DATE, F.DURATION, F.MPA, F.RATE, F.LIKES_AMOUNT \n" +
-                "FROM FILM AS F\n" +
-                "LEFT JOIN FILM_DIRECTOR AS FD ON F.ID = FD.FILM_ID\n" +
-                "LEFT JOIN DIRECTOR AS D ON FD.DIRECTOR_ID = D.ID\n" +
-                "WHERE D.NAME ILIKE %s\n" +
-                "ORDER BY F.LIKES_AMOUNT DESC", sub);
-        return jdbcTemplate.query(sql, (rs, rowNum) ->  Film.makeFilm(rs));
+        String sub = "%" + substring + "%";
+        String sql = "SELECT f.id, f.name, f.description, f.release_date, f.duration, f.mpa, f.rate, f.likes_amount " +
+                "FROM film f " +
+                "LEFT JOIN film_director fd ON f.id = fd.film_id " +
+                "LEFT JOIN director d ON fd.director_id = d.id " +
+                "WHERE d.name ILIKE ? " +
+                "ORDER BY f.likes_amount DESC ";
+        return jdbcTemplate.query(sql, (rs, rowNum) ->  Film.makeFilm(rs), sub);
     }
-}
-
 
     @Override
     public List<Film> getCommonFilms(long userId, long friendId) {

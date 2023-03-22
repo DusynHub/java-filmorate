@@ -226,7 +226,6 @@ public class FilmService {
             return films;
         }
     }
-}
 
     public List<Film> getCommonFilms(long userId, long friendId){
         if (userStorage.getUser(userId) == null || userStorage.getUser(friendId) == null) {
