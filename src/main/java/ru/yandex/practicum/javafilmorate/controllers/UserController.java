@@ -2,11 +2,14 @@ package ru.yandex.practicum.javafilmorate.controllers;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.javafilmorate.model.Feed;
 import ru.yandex.practicum.javafilmorate.model.Film;
 import ru.yandex.practicum.javafilmorate.model.User;
+import ru.yandex.practicum.javafilmorate.service.FeedService;
 import ru.yandex.practicum.javafilmorate.service.UserService;
 
 import javax.validation.Valid;
+import java.util.Collection;
 import java.util.List;
 
 @RestController
@@ -15,10 +18,11 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+    private final FeedService feedService;
 
-
-    public UserController(UserService userService) {
+    public UserController(UserService userService, FeedService feedService) {
         this.userService = userService;
+        this.feedService = feedService;
     }
 
     @PostMapping
@@ -79,5 +83,11 @@ public class UserController {
     public List<Film> getUserRecommendations(@PathVariable long id) {
         log.info(String.format("Получен запрос 'GET /users/%d/recommendations'", id));
         return userService.getUserRecommendationsFromStorage(id);
+    }
+
+    @GetMapping("{id}/feed")
+    public Collection<Feed> getFeed(@PathVariable long id,
+                                    @RequestParam(required = false, defaultValue = "30") Integer limit) {
+        return feedService.getFeed(id, limit);
     }
 }
