@@ -144,6 +144,4 @@ public class UserService {
                                 .map(filmService::getFilmFromStorage)
                                 .collect(Collectors.toList());
     }
-
-
 }
