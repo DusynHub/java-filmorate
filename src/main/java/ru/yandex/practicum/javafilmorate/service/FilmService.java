@@ -30,13 +30,13 @@ public class FilmService {
 
 
     public FilmService(@Qualifier("filmStorageDb") FilmStorage filmStorage
-            , @Qualifier("userStorageDb") UserStorage userStorage
-            , LikeDao likeDao
-            , FilmGenreDao filmGenreDao
-            , FilmDirectorDao filmDirectorDao
-            , GenreDao genreDao
-            , MpaDao mpaDao
-            , DirectorDao directorDao) {
+                        , @Qualifier("userStorageDb") UserStorage userStorage
+                        , LikeDao likeDao
+                        , FilmGenreDao filmGenreDao
+                        , FilmDirectorDao filmDirectorDao
+                        , GenreDao genreDao
+                        , MpaDao mpaDao
+                        , DirectorDao directorDao) {
         this.filmStorage = filmStorage;
         this.likeDao = likeDao;
         this.filmGenreDao = filmGenreDao;
@@ -69,16 +69,16 @@ public class FilmService {
         List<FilmDirector> filmDirectors = filmDirectorDao.getAllFilmDirectors();
 
         Map<Long, Genre> genres = genreDao.getAll()
-                .stream()
-                .collect(Collectors.toMap(Genre::getId, genre -> genre));
+                                            .stream()
+                                            .collect(Collectors.toMap(Genre::getId, genre -> genre));
 
         Map<Integer, Mpa> mpaList = mpaDao.getAll()
-                .stream()
-                .collect(Collectors.toMap(Mpa::getId, thisMpa -> thisMpa));
+                                            .stream()
+                                            .collect(Collectors.toMap(Mpa::getId, thisMpa -> thisMpa));
 
         Map<Long, Director> directorsList = directorDao.getAllDirectors()
-                .stream()
-                .collect(Collectors.toMap(Director::getId, director -> director));
+                                          .stream()
+                                          .collect(Collectors.toMap(Director::getId, director -> director));
 
         Map<Long, List<Genre>> mappedGenres = new HashMap<>();
         for (FilmGenre filmGenre : filmGenres) {
@@ -98,8 +98,8 @@ public class FilmService {
 
         List<Like> allLikes = likeDao.getAllLikes();
         Map<Long, User> allUsers = userStorage.getAllUsers()
-                .stream()
-                .collect(Collectors.toMap(User::getId, user -> user));
+                                                .stream()
+                                                .collect(Collectors.toMap(User::getId, user -> user));
 
         Map<Long, List<User>> mappedUsers = new HashMap<>();
         for (Like like : allLikes) {
@@ -195,6 +195,36 @@ public class FilmService {
             film.setMpa(mpaDao.getMpaById(film.getMpa().getId()));
             film.setDirectors(filmDirectorDao.getFilmDirector(film.getId()));
         });
+    }
+
+    public List<Film> getSearchFilms(String substring, List<String>titleOrDirector) {
+        List<Film> films;
+        String by1 = titleOrDirector.get(0);
+        String by2 = "by";
+        if (titleOrDirector.size() > 1) {
+            by2  = titleOrDirector.get(1);
+        }
+        if (by1.equals("title")) {
+            if (by2.equals("director")) {
+                log.info("Поиск '{}' по названиям фильмов и режиссерам", substring);
+                films = filmStorage.getSearchFilmsByTitleAndDirector(substring);
+            } else {
+                log.info("Поиск '{}' по названию фильма", substring);
+                films = filmStorage.getSearchFilmsByTitle(substring);
+            }
+            setForFilms(films);
+            return films;
+        } else if (by2.equals("title")) {
+            log.info("Поиск '{}' по названиям фильмов и режиссерам", substring);
+            films = filmStorage.getSearchFilmsByTitleAndDirector(substring);
+            setForFilms(films);
+            return films;
+        } else {
+            log.info("Поиск '{}' по режиссеру", substring);
+            films = filmStorage.getSearchFilmsByDirector(substring);
+            setForFilms(films);
+            return films;
+        }
     }
 
     public List<Film> getCommonFilms(long userId, long friendId) {

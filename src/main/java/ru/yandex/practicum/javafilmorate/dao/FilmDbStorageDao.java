@@ -211,6 +211,40 @@ public class FilmDbStorageDao implements FilmStorage {
     }
 
     @Override
+    public List<Film> getSearchFilmsByTitleAndDirector(String substring) {
+        String sub = "%" + substring + "%";
+        String sql = "SELECT f.id, f.name, f.description, f.release_date, f.duration, f.mpa, f.rate, f.likes_amount " +
+                "FROM film f " +
+                "LEFT JOIN film_director fd ON f.id = fd.film_id " +
+                "LEFT JOIN director d ON fd.director_id = d.id " +
+                "WHERE f.name ILIKE ? OR d.name ILIKE ? " +
+                "ORDER BY f.likes_amount DESC";
+        return jdbcTemplate.query(sql, (rs, rowNum) ->  Film.makeFilm(rs), sub, sub);
+    }
+
+    @Override
+    public List<Film> getSearchFilmsByTitle(String substring) {
+        String sub = "%" + substring + "%";
+        String sql = "SELECT f.id, f.name, f.description, f.release_date, f.duration, f.mpa, f.rate, f.likes_amount " +
+                "FROM film f " +
+                "WHERE f.name ILIKE ? " +
+                "ORDER BY f.likes_amount DESC";
+        return jdbcTemplate.query(sql, (rs, rowNum) ->  Film.makeFilm(rs), sub);
+    }
+
+    @Override
+    public List<Film> getSearchFilmsByDirector(String substring) {
+        String sub = "%" + substring + "%";
+        String sql = "SELECT f.id, f.name, f.description, f.release_date, f.duration, f.mpa, f.rate, f.likes_amount " +
+                "FROM film f " +
+                "LEFT JOIN film_director fd ON f.id = fd.film_id " +
+                "LEFT JOIN director d ON fd.director_id = d.id " +
+                "WHERE d.name ILIKE ? " +
+                "ORDER BY f.likes_amount DESC ";
+        return jdbcTemplate.query(sql, (rs, rowNum) ->  Film.makeFilm(rs), sub);
+    }
+
+    @Override
     public List<Film> getCommonFilms(long userId) {
         String sql = (
                 "SELECT f.id, f.name, f.description, f.release_date, f.duration, f.mpa, f.rate, f.LIKES_AMOUNT " +
