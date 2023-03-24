@@ -8,25 +8,28 @@ import java.util.List;
 
 public interface FilmStorage {
 
-     Film addFilm(Film film);
+    Film addFilm(Film film);
 
-     Film getFilm(Long id);
+    Film getFilm(Long id);
 
-     Film removeFilm(Long id);
+    Film removeFilm(Long id);
 
-     Film updateFilm(Film film);
+    Film updateFilm(Film film);
 
-     List<Film> getAllFilms();
-     boolean doesFilmExist(long id);
+    List<Film> getAllFilms();
 
-     public List<Film> getMostLikedFilms(int limit);
-     public List<Film> getDirectorFilms(long id, String sortBy);
+    boolean doesFilmExist(long id);
 
-     public List<Film> getMostPopularsFilmsByGenreByYear(int count, long genreId, int year);
+    public List<Film> getMostLikedFilms(int limit);
 
-     public List<Film> getMostPopularsFilmsByGenre(int count, long genreId);
+    public List<Film> getDirectorFilms(long id, String sortBy);
 
-     public List<Film> getMostPopularsFilmsByYear(int count, int year);
-     public List<Film> getCommonFilms(long userId, long friendId);
+    public List<Film> getMostPopularsFilmsByGenreByYear(int count, long genreId, int year);
+
+    public List<Film> getMostPopularsFilmsByGenre(int count, long genreId);
+
+    public List<Film> getMostPopularsFilmsByYear(int count, int year);
+
+    public List<Film> getCommonFilms(long userId);
 
 }

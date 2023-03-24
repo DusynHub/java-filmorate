@@ -211,16 +211,13 @@ public class FilmDbStorageDao implements FilmStorage {
     }
 
     @Override
-    public List<Film> getCommonFilms(long userId, long friendId) {
+    public List<Film> getCommonFilms(long userId) {
         String sql = (
                 "SELECT f.id, f.name, f.description, f.release_date, f.duration, f.mpa, f.rate, f.LIKES_AMOUNT " +
                         "FROM film f " +
                         "LEFT JOIN likes l ON f.id = l.film_id " +
-                        "WHERE f.id IN (SELECT f2.film_id " +
-                        "                    FROM (SELECT likes.film_id FROM likes WHERE user_id = ?) AS f1 " +
-                        "                    INNER JOIN (SELECT likes.film_id FROM likes WHERE user_id = ?) AS f2 ON f1.film_id = f2.film_id)" +
-                        "                    GROUP BY f.id "
+                        "WHERE l.user_id = ? "
         );
-        return jdbcTemplate.query(sql, (rs, rowNum) -> Film.makeFilm(rs),userId, friendId);
+        return jdbcTemplate.query(sql, (rs, rowNum) -> Film.makeFilm(rs), userId);
     }
 }
