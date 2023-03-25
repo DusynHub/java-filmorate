@@ -1,5 +1,6 @@
 package ru.yandex.practicum.javafilmorate.service;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,22 +15,16 @@ import java.util.Collection;
 import java.util.Objects;
 @Service
 @Slf4j
+@AllArgsConstructor
 public class FeedService {
     private final FeedDao feedStorage;
     private final UserService userService;
     private final ReviewsService reviewsService;
-    @Autowired
-    public FeedService(FeedDao feedStorage, UserService userService, ReviewsService reviewsService) {
-        this.feedStorage = feedStorage;
-        this.userService = userService;
-        this.reviewsService = reviewsService;
-    }
 
     public void addFeed(String methodName, Object[] parameters) {
         Feed newFeed;
         if (parameters[0] instanceof Review){
             Review review = (Review) parameters[0];
-            //newFeed = createFeed(methodName, review.getUserId(), review.getReviewId());
             if (methodName.equals("updateReview")){
                 newFeed = createFeed(methodName, reviewsService.getReviewById(review.getReviewId()).getUserId(), review.getReviewId());
             } else {
