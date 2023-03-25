@@ -1,6 +1,6 @@
 package ru.yandex.practicum.javafilmorate.dao;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -18,13 +18,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Repository
+@RequiredArgsConstructor
 public class FeedDaoImpl implements FeedDao {
     private final JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    public FeedDaoImpl(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
     @Override
     public Collection<Feed> getFeed(Long userId, Integer limit) {

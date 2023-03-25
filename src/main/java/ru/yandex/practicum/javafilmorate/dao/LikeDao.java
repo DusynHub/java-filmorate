@@ -33,8 +33,8 @@ public class LikeDao {
     }
 
     public void putLike(long filmId, long userId){
-        String sql =    "MERGE INTO LIKES l USING (VALUES (?,?)) s(filmId, userId) \n" +
-                        "ON l.FILM_ID = S.filmId AND l.USER_ID = S.userId \n" +
+        String sql =    "MERGE INTO LIKES l USING (VALUES (?,?)) s(filmId, userId) " +
+                        "ON l.FILM_ID = S.filmId AND l.USER_ID = S.userId " +
                         "WHEN NOT MATCHED THEN INSERT VALUES ( S.filmId, S.userId) ";
         try{
             jdbcTemplate.update(sql, filmId, userId);
@@ -70,7 +70,7 @@ public class LikeDao {
         }
 
         String sql2 = "UPDATE FILM\n" +
-                      "SET LIKES_AMOUNT = LIKES_AMOUNT - 1\n" +
+                      "SET LIKES_AMOUNT = LIKES_AMOUNT - 1 " +
                       "WHERE ID = ?";
         jdbcTemplate.update(sql2, filmId);
     }
@@ -89,9 +89,9 @@ public class LikeDao {
     }
 
     public List<Like> getUserLikesById(long id){
-        String sql =    "SELECT l.film_id, l.user_id \n" +
-                        "FROM likes l \n" +
-                        "WHERE user_id = ? \n";
+        String sql =    "SELECT l.film_id, l.user_id " +
+                        "FROM likes l " +
+                        "WHERE user_id = ? ";
 
         return jdbcTemplate.query(sql, (rs, rowNum) -> makeLike(rs), id);
     }
@@ -102,12 +102,12 @@ public class LikeDao {
         parameters.addValue("filmsIdLikedByUser", filmsIdLikedByUser);
         parameters.addValue("ids", id);
 
-        String sql =    "SELECT l.USER_ID, COUNT(l.FILM_ID) AS FILM_ID \n" +
-                        "FROM likes l \n" +
-                        "WHERE l.USER_ID NOT IN (:ids) AND l.FILM_ID IN (:filmsIdLikedByUser) \n" +
-                        "GROUP BY l.USER_ID \n" +
-                        "ORDER BY COUNT(l.FILM_ID) DESC \n" +
-                        "LIMIT 1 \n";
+        String sql =    "SELECT l.USER_ID, COUNT(l.FILM_ID) AS FILM_ID " +
+                        "FROM likes l " +
+                        "WHERE l.USER_ID NOT IN (:ids) AND l.FILM_ID IN (:filmsIdLikedByUser) " +
+                        "GROUP BY l.USER_ID " +
+                        "ORDER BY COUNT(l.FILM_ID) DESC " +
+                        "LIMIT 1 ";
 
         return namedParameterJdbcTemplate.query(sql,parameters ,(rs, rowNum) -> makeLike(rs));
     }

@@ -9,10 +9,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.javafilmorate.exceptions.EntityDoesNotExistException;
-import ru.yandex.practicum.javafilmorate.model.Director;
 import ru.yandex.practicum.javafilmorate.model.Film;
-import ru.yandex.practicum.javafilmorate.model.FilmSort;
-import ru.yandex.practicum.javafilmorate.model.Genre;
 import ru.yandex.practicum.javafilmorate.storage.FilmStorage;
 
 import java.sql.Date;
@@ -34,29 +31,29 @@ public class FilmDbStorageDao implements FilmStorage {
     @Override
     public Film addFilm(Film film) {
         String sqlQuery = "INSERT INTO FILM ( name, description, release_date, duration, mpa, rate, LIKES_AMOUNT) " +
-                          "VALUES (?,?,?,?,?,?,?)";
-            KeyHolder keyHolder = new GeneratedKeyHolder();
-            jdbcTemplate.update(connection -> {
-                PreparedStatement stmt = connection.prepareStatement(sqlQuery, new String[]{"id"});
-                stmt.setString(1, film.getName());
-                stmt.setString(2, film.getDescription());
-                stmt.setDate(3, Date.valueOf(film.getReleaseDate()));
-                stmt.setInt(4, (int) film.getDuration().toSeconds());
-                stmt.setInt(5, film.getMpa().getId());
-                stmt.setInt(6, film.getRate());
-                stmt.setInt(7, 0);
-                return stmt;
-            }, keyHolder);
-            long idKey = Objects.requireNonNull(keyHolder.getKey()).longValue();
-            film.setId(idKey);
-            return film;
+                "VALUES (?,?,?,?,?,?,?)";
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(connection -> {
+            PreparedStatement stmt = connection.prepareStatement(sqlQuery, new String[]{"id"});
+            stmt.setString(1, film.getName());
+            stmt.setString(2, film.getDescription());
+            stmt.setDate(3, Date.valueOf(film.getReleaseDate()));
+            stmt.setInt(4, (int) film.getDuration().toSeconds());
+            stmt.setInt(5, film.getMpa().getId());
+            stmt.setInt(6, film.getRate());
+            stmt.setInt(7, 0);
+            return stmt;
+        }, keyHolder);
+        long idKey = Objects.requireNonNull(keyHolder.getKey()).longValue();
+        film.setId(idKey);
+        return film;
     }
 
     @Override
     public Film getFilm(Long id) {
         String sql = "SELECT id, name, description, release_date, duration, mpa, rate, LIKES_AMOUNT\n" +
-                     "FROM film " +
-                     "WHERE id = ?";
+                "FROM film " +
+                "WHERE id = ?";
         Film film;
         try {
             film = jdbcTemplate.queryForObject(sql,
@@ -86,22 +83,22 @@ public class FilmDbStorageDao implements FilmStorage {
     @Override
     public Film updateFilm(Film film) {
         String sql = "UPDATE FILM " +
-                     "SET name = ?, " +
-                         "description = ?, " +
-                         "release_date = ?, " +
-                         "duration = ?, " +
-                         "mpa = ?, "+
-                         "rate = ? " +
-                     " WHERE id = ?";
+                "SET name = ?, " +
+                "description = ?, " +
+                "release_date = ?, " +
+                "duration = ?, " +
+                "mpa = ?, " +
+                "rate = ? " +
+                " WHERE id = ?";
         int updatedRows = jdbcTemplate.update(sql
-                                            , film.getName()
-                                            , film.getDescription()
-                                            , Date.valueOf(film.getReleaseDate())
-                                            , (int) film.getDuration().toSeconds()
-                                            , film.getMpa().getId()
-                                            , film.getRate()
-                                            , film.getId());
-        if(updatedRows == 0){
+                , film.getName()
+                , film.getDescription()
+                , Date.valueOf(film.getReleaseDate())
+                , (int) film.getDuration().toSeconds()
+                , film.getMpa().getId()
+                , film.getRate()
+                , film.getId());
+        if (updatedRows == 0) {
             log.debug("Фильм с идентификатором {} не найден.", film.getId());
             throw new EntityDoesNotExistException(
                     String.format("Фильм с идентификатором %d не найден.", film.getId()));
@@ -128,14 +125,14 @@ public class FilmDbStorageDao implements FilmStorage {
     @Override
     public List<Film> getAllFilms() {
         String sql = "SELECT id, name, description, release_date, duration, mpa ,rate , LIKES_AMOUNT \n" +
-                      "FROM film ";
+                "FROM film ";
         return jdbcTemplate.query(sql, (rs, rowNum) -> Film.makeFilm(rs));
     }
 
     @Override
     public boolean doesFilmExist(long id) {
         Film film = getFilm(id);
-        return film != null ;
+        return film != null;
     }
 
     @Override
@@ -219,7 +216,7 @@ public class FilmDbStorageDao implements FilmStorage {
                 "LEFT JOIN director d ON fd.director_id = d.id " +
                 "WHERE f.name ILIKE ? OR d.name ILIKE ? " +
                 "ORDER BY f.likes_amount DESC";
-        return jdbcTemplate.query(sql, (rs, rowNum) ->  Film.makeFilm(rs), sub, sub);
+        return jdbcTemplate.query(sql, (rs, rowNum) -> Film.makeFilm(rs), sub, sub);
     }
 
     @Override
@@ -229,7 +226,7 @@ public class FilmDbStorageDao implements FilmStorage {
                 "FROM film f " +
                 "WHERE f.name ILIKE ? " +
                 "ORDER BY f.likes_amount DESC";
-        return jdbcTemplate.query(sql, (rs, rowNum) ->  Film.makeFilm(rs), sub);
+        return jdbcTemplate.query(sql, (rs, rowNum) -> Film.makeFilm(rs), sub);
     }
 
     @Override
@@ -241,7 +238,7 @@ public class FilmDbStorageDao implements FilmStorage {
                 "LEFT JOIN director d ON fd.director_id = d.id " +
                 "WHERE d.name ILIKE ? " +
                 "ORDER BY f.likes_amount DESC ";
-        return jdbcTemplate.query(sql, (rs, rowNum) ->  Film.makeFilm(rs), sub);
+        return jdbcTemplate.query(sql, (rs, rowNum) -> Film.makeFilm(rs), sub);
     }
 
     @Override

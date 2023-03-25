@@ -30,13 +30,13 @@ public class FilmService {
 
 
     public FilmService(@Qualifier("filmStorageDb") FilmStorage filmStorage
-                        , @Qualifier("userStorageDb") UserStorage userStorage
-                        , LikeDao likeDao
-                        , FilmGenreDao filmGenreDao
-                        , FilmDirectorDao filmDirectorDao
-                        , GenreDao genreDao
-                        , MpaDao mpaDao
-                        , DirectorDao directorDao) {
+            , @Qualifier("userStorageDb") UserStorage userStorage
+            , LikeDao likeDao
+            , FilmGenreDao filmGenreDao
+            , FilmDirectorDao filmDirectorDao
+            , GenreDao genreDao
+            , MpaDao mpaDao
+            , DirectorDao directorDao) {
         this.filmStorage = filmStorage;
         this.likeDao = likeDao;
         this.filmGenreDao = filmGenreDao;
@@ -69,16 +69,16 @@ public class FilmService {
         List<FilmDirector> filmDirectors = filmDirectorDao.getAllFilmDirectors();
 
         Map<Long, Genre> genres = genreDao.getAll()
-                                            .stream()
-                                            .collect(Collectors.toMap(Genre::getId, genre -> genre));
+                .stream()
+                .collect(Collectors.toMap(Genre::getId, genre -> genre));
 
         Map<Integer, Mpa> mpaList = mpaDao.getAll()
-                                            .stream()
-                                            .collect(Collectors.toMap(Mpa::getId, thisMpa -> thisMpa));
+                .stream()
+                .collect(Collectors.toMap(Mpa::getId, thisMpa -> thisMpa));
 
         Map<Long, Director> directorsList = directorDao.getAllDirectors()
-                                          .stream()
-                                          .collect(Collectors.toMap(Director::getId, director -> director));
+                .stream()
+                .collect(Collectors.toMap(Director::getId, director -> director));
 
         Map<Long, List<Genre>> mappedGenres = new HashMap<>();
         for (FilmGenre filmGenre : filmGenres) {
@@ -98,8 +98,8 @@ public class FilmService {
 
         List<Like> allLikes = likeDao.getAllLikes();
         Map<Long, User> allUsers = userStorage.getAllUsers()
-                                                .stream()
-                                                .collect(Collectors.toMap(User::getId, user -> user));
+                .stream()
+                .collect(Collectors.toMap(User::getId, user -> user));
 
         Map<Long, List<User>> mappedUsers = new HashMap<>();
         for (Like like : allLikes) {
@@ -140,17 +140,6 @@ public class FilmService {
 
     public void deleteLikeFilmInStorage(long id, long userId) {
         likeDao.deleteLike(id, userId);
-    }
-
-    public List<Film> getMostLikedFilmsFromStorage(int count) {
-        List<Film> films = filmStorage.getMostLikedFilms(count);
-        films.forEach((film) -> {
-            film.setLikes(likeDao.getFilmLikes(film.getId()));
-            film.setGenres(filmGenreDao.getFilmGenre(film.getId()));
-            film.setMpa(mpaDao.getMpaById(film.getMpa().getId()));
-            film.setDirectors(filmDirectorDao.getFilmDirector(film.getId()));
-        });
-        return films;
     }
 
     public List<Film> getDirectorFilms(long id, String sortBy) {
@@ -197,12 +186,12 @@ public class FilmService {
         });
     }
 
-    public List<Film> getSearchFilms(String substring, List<String>titleOrDirector) {
+    public List<Film> getSearchFilms(String substring, List<String> titleOrDirector) {
         List<Film> films;
         String by1 = titleOrDirector.get(0);
         String by2 = "by";
         if (titleOrDirector.size() > 1) {
-            by2  = titleOrDirector.get(1);
+            by2 = titleOrDirector.get(1);
         }
         if (by1.equals("title")) {
             if (by2.equals("director")) {

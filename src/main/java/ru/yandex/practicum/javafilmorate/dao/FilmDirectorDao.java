@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 public class FilmDirectorDao {
     private final JdbcTemplate jdbcTemplate;
 
-    public List<Director> getFilmDirector(long id){
+    public List<Director> getFilmDirector(long id) {
         String sql = "SELECT d.id, d.name " +
                 "FROM FILM_DIRECTOR fd " +
                 "LEFT JOIN DIRECTOR d ON  fd.DIRECTOR_ID = d.id " +
@@ -39,6 +39,7 @@ public class FilmDirectorDao {
                         ps.setLong(1, film.getId());
                         ps.setLong(2, uniqDirectors.get(i).getId());
                     }
+
                     public int getBatchSize() {
                         return uniqDirectors.size();
                     }
@@ -47,11 +48,11 @@ public class FilmDirectorDao {
         return film;
     }
 
-    public void deleteAllFilmDirectorsByFilmId(long filmId ){
+    public void deleteAllFilmDirectorsByFilmId(long filmId) {
 
         String sql = "DELETE FROM FILM_DIRECTOR " +
                 "WHERE film_id = ?";
-        jdbcTemplate.update(sql,filmId);
+        jdbcTemplate.update(sql, filmId);
     }
 
     public List<FilmDirector> getAllFilmDirectors() {

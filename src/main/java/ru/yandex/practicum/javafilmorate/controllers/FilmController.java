@@ -1,9 +1,9 @@
 package ru.yandex.practicum.javafilmorate.controllers;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.javafilmorate.model.Film;
-import ru.yandex.practicum.javafilmorate.model.FilmSort;
 import ru.yandex.practicum.javafilmorate.service.FilmService;
 
 import javax.validation.Valid;
@@ -11,15 +11,11 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/films")
+@RequiredArgsConstructor
 @Slf4j
 public class FilmController {
 
     private final FilmService filmService;
-
-
-    public FilmController(FilmService filmService) {
-        this.filmService = filmService;
-    }
 
     @PostMapping
     public Film add(@RequestBody @Valid Film film) {

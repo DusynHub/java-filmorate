@@ -1,5 +1,7 @@
 package ru.yandex.practicum.javafilmorate.controllers;
 
+
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.javafilmorate.model.Feed;
@@ -14,16 +16,12 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/users")
+@RequiredArgsConstructor
 @Slf4j
 public class UserController {
 
     private final UserService userService;
     private final FeedService feedService;
-
-    public UserController(UserService userService, FeedService feedService) {
-        this.userService = userService;
-        this.feedService = feedService;
-    }
 
     @PostMapping
     public User addNewUser(@RequestBody @Valid User user) {
@@ -44,7 +42,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public User getUsero(@PathVariable long id) {
+    public User getUser(@PathVariable long id) {
         log.info(String.format("Получен запрос 'GET /users/%d'", id));
         return userService.getUserFromStorage(id);
     }

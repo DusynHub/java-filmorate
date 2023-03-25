@@ -8,6 +8,8 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.javafilmorate.model.Review;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -69,7 +71,6 @@ public class ReviewsDaoStandard implements ReviewsDao {
             }
         } catch (EmptyResultDataAccessException e) {
             reviewList = new ArrayList<>();
-            ;
         }
         return reviewList;
     }
@@ -117,6 +118,9 @@ public class ReviewsDaoStandard implements ReviewsDao {
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
+        if (review == null) {
+            return null;
+        }
         jdbcTemplate.update(sqlUpdateReviewUseful, review.getUseful() + 1, id);
         return jdbcTemplate.queryForObject(sqlQueryGetReviewById,
                 this::mapRowToReview,
@@ -130,6 +134,9 @@ public class ReviewsDaoStandard implements ReviewsDao {
         try {
             review = jdbcTemplate.queryForObject(sqlQueryGetReviewById, this::mapRowToReview, id);
         } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+        if (review == null) {
             return null;
         }
         jdbcTemplate.update(sqlUpdateReviewUseful, review.getUseful() - 1, id);
@@ -147,6 +154,9 @@ public class ReviewsDaoStandard implements ReviewsDao {
         } catch (EmptyResultDataAccessException e) {
             return false;
         }
+        if (review == null) {
+            return false;
+        }
         jdbcTemplate.update(sqlUpdateReviewUseful, review.getUseful() - 1, id);
         return true;
     }
@@ -158,6 +168,9 @@ public class ReviewsDaoStandard implements ReviewsDao {
         try {
             review = jdbcTemplate.queryForObject(sqlQueryGetReviewById, this::mapRowToReview, id);
         } catch (EmptyResultDataAccessException e) {
+            return false;
+        }
+        if (review == null) {
             return false;
         }
         jdbcTemplate.update(sqlUpdateReviewUseful, review.getUseful() + 1, id);

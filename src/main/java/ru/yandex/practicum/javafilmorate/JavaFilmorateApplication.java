@@ -9,8 +9,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class JavaFilmorateApplication {
 
-	//develop git
-	public static void main(String[] args) throws JsonProcessingException {
+	public static void main(String[] args) {
 		SpringApplication.run(JavaFilmorateApplication.class, args);
 	}
 }

@@ -9,7 +9,7 @@ import java.sql.SQLException;
 @Setter
 @ToString
 @EqualsAndHashCode
-//@Builder
+@Builder
 public class Genre {
 
     private long id;
@@ -23,6 +23,6 @@ public class Genre {
     public static Genre makeGenre(ResultSet rs) throws SQLException {
         int id = rs.getInt("id");
         String name = rs.getString("name");
-        return new Genre(id,name);
+        return new Genre(id, name);
     }
 }

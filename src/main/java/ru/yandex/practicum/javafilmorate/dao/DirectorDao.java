@@ -9,10 +9,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.javafilmorate.exceptions.EntityDoesNotExistException;
 import ru.yandex.practicum.javafilmorate.model.Director;
-import ru.yandex.practicum.javafilmorate.model.Film;
-import ru.yandex.practicum.javafilmorate.model.Mpa;
 
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -25,27 +22,28 @@ import java.util.Objects;
 public class DirectorDao {
     private final JdbcTemplate jdbcTemplate;
 
-    public List<Director> getAllDirectors(){
+    public List<Director> getAllDirectors() {
         String sql = "SELECT id, name " +
                 "FROM DIRECTOR";
 
         return jdbcTemplate.query(sql, (rs, rowNum) -> makeDirector(rs));
     }
 
-    public Director getDirectorById(long id){
+    public Director getDirectorById(long id) {
         String sql = "SELECT id, name " +
                 "FROM Director " +
                 "WHERE id = ?";
 
-        try{    Director director = jdbcTemplate.queryForObject(sql,
-                (ResultSet rs, int rowNum) -> makeDirector(rs),
-                id);
-            if(director !=  null){
+        try {
+            Director director = jdbcTemplate.queryForObject(sql,
+                    (ResultSet rs, int rowNum) -> makeDirector(rs),
+                    id);
+            if (director != null) {
                 log.info("Найден режиссёр c id = {}, именем = {}", director.getId(),
                         director.getName());
             }
             return director;
-        } catch(EmptyResultDataAccessException e){
+        } catch (EmptyResultDataAccessException e) {
             log.debug("Режиссёр с идентификатором {} не найден.", id);
             throw new EntityDoesNotExistException(String.format(
                     "Режиссёр с идентификатором %d не найден.", id));
@@ -68,7 +66,7 @@ public class DirectorDao {
     public Director updateDirectorInDb(Director director) {
         String sql = "UPDATE DIRECTOR SET name = ? WHERE id = ?";
         int updatedRows = jdbcTemplate.update(sql, director.getName(), director.getId());
-        if(updatedRows == 0){
+        if (updatedRows == 0) {
             log.debug("Режиссёр с идентификатором {} не найден.", director.getId());
             throw new EntityDoesNotExistException(
                     String.format("Режиссёр с идентификатором %d не найден.", director.getId()));
@@ -83,7 +81,7 @@ public class DirectorDao {
         return director;
     }
 
-    private Director makeDirector( ResultSet rs) throws SQLException {
+    private Director makeDirector(ResultSet rs) throws SQLException {
         int id = rs.getInt("id");
         String name = rs.getString("name");
         return new Director(id, name);
