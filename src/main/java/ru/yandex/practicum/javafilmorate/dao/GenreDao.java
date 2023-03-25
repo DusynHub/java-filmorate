@@ -18,29 +18,30 @@ public class GenreDao {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public List<Genre> getAll(){
+    public List<Genre> getAll() {
         String sql = "SELECT id, name " +
-                     "FROM Genre";
+                "FROM Genre";
 
-      return jdbcTemplate.query(sql, (rs, rowNum) -> Genre.makeGenre(rs));
+        return jdbcTemplate.query(sql, (rs, rowNum) -> Genre.makeGenre(rs));
     }
 
-    public Genre getGenreById(long id){
+    public Genre getGenreById(long id) {
         String sql = "SELECT id, name " +
-                     "FROM Genre " +
-                     "WHERE id = ?";
+                "FROM Genre " +
+                "WHERE id = ?";
 
-        try{    Genre mpa = jdbcTemplate.queryForObject(sql,
-                (ResultSet rs, int rowNum) -> Genre.makeGenre(rs),
-                id);
-            if(mpa != null){
+        try {
+            Genre mpa = jdbcTemplate.queryForObject(sql,
+                    (ResultSet rs, int rowNum) -> Genre.makeGenre(rs),
+                    id);
+            if (mpa != null) {
                 log.info("Найден Жанр: c id = {} названием = {}", mpa.getId(), mpa.getName());
             }
             return mpa;
-        } catch(EmptyResultDataAccessException e){
+        } catch (EmptyResultDataAccessException e) {
             log.debug("Жанр с идентификатором {} не найден.", id);
             throw new EntityDoesNotExistException(String.format(
-                                                "Жанр с идентификатором %d не найден.", id));
+                    "Жанр с идентификатором %d не найден.", id));
         }
     }
 }

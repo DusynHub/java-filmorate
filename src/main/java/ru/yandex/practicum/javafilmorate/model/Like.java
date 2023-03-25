@@ -6,14 +6,11 @@ import lombok.*;
 @Setter
 @ToString
 @EqualsAndHashCode
+@AllArgsConstructor
 @Builder
 public class Like {
 
     private long filmId;
     private long userId;
 
-    public Like(long filmId, long userId) {
-        this.filmId = filmId;
-        this.userId = userId;
-    }
 }

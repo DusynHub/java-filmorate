@@ -1,15 +1,13 @@
 package ru.yandex.practicum.javafilmorate.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import ru.yandex.practicum.javafilmorate.dao.DirectorDao;
-import ru.yandex.practicum.javafilmorate.dao.MpaDao;
 import ru.yandex.practicum.javafilmorate.model.Director;
-import ru.yandex.practicum.javafilmorate.model.Mpa;
 
 import java.util.List;
 
-@Component
+@Service
 @RequiredArgsConstructor
 public class DirectorService {
     private final DirectorDao directorDao;

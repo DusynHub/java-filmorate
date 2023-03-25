@@ -138,10 +138,10 @@ public class UserService {
         long firstUserIdWithSameLiked = firstUserWithSameLikedFilms.get(0).getUserId();
 
         return likeDao.getUserLikesById(firstUserIdWithSameLiked)
-                                .stream()
-                                .map(Like::getFilmId)
-                                .filter(like -> !filmsIdLikedByUser.contains(like))
-                                .map(filmService::getFilmFromStorage)
-                                .collect(Collectors.toList());
+                .stream()
+                .map(Like::getFilmId)
+                .filter(like -> !filmsIdLikedByUser.contains(like))
+                .map(filmService::getFilmFromStorage)
+                .collect(Collectors.toList());
     }
 }

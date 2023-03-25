@@ -13,6 +13,7 @@ import ru.yandex.practicum.javafilmorate.model.Feed;
 
 import java.util.Collection;
 import java.util.Objects;
+
 @Service
 @Slf4j
 @AllArgsConstructor
@@ -23,9 +24,9 @@ public class FeedService {
 
     public void addFeed(String methodName, Object[] parameters) {
         Feed newFeed;
-        if (parameters[0] instanceof Review){
+        if (parameters[0] instanceof Review) {
             Review review = (Review) parameters[0];
-            if (methodName.equals("updateReview")){
+            if (methodName.equals("updateReview")) {
                 newFeed = createFeed(methodName, reviewsService.getReviewById(review.getReviewId()).getUserId(), review.getReviewId());
             } else {
                 newFeed = createFeed(methodName, review.getUserId(), review.getReviewId());
@@ -55,12 +56,12 @@ public class FeedService {
 
     public Collection<Feed> getFeed(Long userId, Integer limit) {
         User user = userService.getUserFromStorage(userId);
-        if (Objects.isNull(user)){
+        if (Objects.isNull(user)) {
             throw new EntityDoesNotExistException(
                     String.format("Пользователь с  id %d не существует.", userId));
         }
         log.info("FeedService: Получена лента новостей для юзера: {}", user.getId());
-        return feedStorage.getFeed(userId,limit);
+        return feedStorage.getFeed(userId, limit);
     }
 
     private Feed createFeed(String methodName, Long userId, Long entityId) {

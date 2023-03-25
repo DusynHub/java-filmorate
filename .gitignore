@@ -32,7 +32,4 @@ build/
 ### VS Code ###
 .vscode/
 /db/
-/db/filmorate.mv.db
-
-/db/filmorate.mv.db
-/db/
+/target/

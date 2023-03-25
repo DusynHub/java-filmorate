@@ -23,17 +23,17 @@ public class FilmGenreDao {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public List<Genre> getFilmGenre(long id){
+    public List<Genre> getFilmGenre(long id) {
         String sql = "SELECT g.id, g.name " +
-                     "FROM film_genre fg " +
-                     "LEFT JOIN genre g ON  fg.genre_id = g.id " +
-                     "WHERE fg.film_id = ?";
+                "FROM film_genre fg " +
+                "LEFT JOIN genre g ON  fg.genre_id = g.id " +
+                "WHERE fg.film_id = ?";
         return jdbcTemplate.query(sql, (rs, rowNum) -> Genre.makeGenre(rs), id);
     }
 
-    public Film insertFilmGenre(Film film){
+    public Film insertFilmGenre(Film film) {
         String sql = "INSERT INTO FILM_GENRE(FILM_ID,GENRE_ID)  " +
-                     "VALUES(?,?)";
+                "VALUES(?,?)";
 
         List<Genre> uniqGenres = film.getGenres().stream().distinct().collect(Collectors.toList());
 
@@ -43,6 +43,7 @@ public class FilmGenreDao {
                         ps.setLong(1, film.getId());
                         ps.setLong(2, uniqGenres.get(i).getId());
                     }
+
                     public int getBatchSize() {
                         return uniqGenres.size();
                     }
@@ -51,16 +52,16 @@ public class FilmGenreDao {
         return film;
     }
 
-    public void deleteAllFilmGenresByFilmId(long filmId ){
+    public void deleteAllFilmGenresByFilmId(long filmId) {
 
         String sql = "DELETE FROM FILM_GENRE " +
-                     "WHERE film_id = ?";
-        jdbcTemplate.update(sql,filmId);
+                "WHERE film_id = ?";
+        jdbcTemplate.update(sql, filmId);
     }
 
-    public List<FilmGenre> getAllFilmGenres(){
+    public List<FilmGenre> getAllFilmGenres() {
         String sql = "SELECT fg.film_id, fg.genre_id " +
-                     "FROM film_genre fg";
+                "FROM film_genre fg";
         return jdbcTemplate.query(sql, (ResultSet rs, int rowNum) -> makeFilmGenre(rs));
     }
 
