@@ -10,10 +10,9 @@ import javax.validation.constraints.NotBlank;
 import java.sql.Timestamp;
 
 @Data
-@AllArgsConstructor
 @Builder
-@NoArgsConstructor
 public class Feed {
+
     private Long eventId;
     @NotBlank
     private Long userId;

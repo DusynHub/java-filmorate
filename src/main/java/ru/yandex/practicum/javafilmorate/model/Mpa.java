@@ -17,4 +17,5 @@ public class Mpa {
     public Mpa(int id) {
         this.id = id;
     }
+
 }

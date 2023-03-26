@@ -8,6 +8,7 @@ import lombok.*;
 @EqualsAndHashCode
 @Builder
 public class FilmGenre {
+
     private long genreId;
     private long filmId;
 

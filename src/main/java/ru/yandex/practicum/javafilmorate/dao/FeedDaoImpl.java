@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 @Repository
 @RequiredArgsConstructor
 public class FeedDaoImpl implements FeedDao {
+
     private final JdbcTemplate jdbcTemplate;
 
     @Override

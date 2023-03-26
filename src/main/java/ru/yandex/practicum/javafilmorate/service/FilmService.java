@@ -1,5 +1,6 @@
 package ru.yandex.practicum.javafilmorate.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -17,7 +18,10 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class FilmService {
+
+    @Qualifier("filmStorageDb")
     private final FilmStorage filmStorage;
     private final LikeDao likeDao;
     private final FilmGenreDao filmGenreDao;
@@ -26,26 +30,10 @@ public class FilmService {
     private final GenreDao genreDao;
     private final DirectorDao directorDao;
     private final MpaDao mpaDao;
+
+    @Qualifier("userStorageDb")
     private final UserStorage userStorage;
 
-
-    public FilmService(@Qualifier("filmStorageDb") FilmStorage filmStorage
-            , @Qualifier("userStorageDb") UserStorage userStorage
-            , LikeDao likeDao
-            , FilmGenreDao filmGenreDao
-            , FilmDirectorDao filmDirectorDao
-            , GenreDao genreDao
-            , MpaDao mpaDao
-            , DirectorDao directorDao) {
-        this.filmStorage = filmStorage;
-        this.likeDao = likeDao;
-        this.filmGenreDao = filmGenreDao;
-        this.filmDirectorDao = filmDirectorDao;
-        this.genreDao = genreDao;
-        this.mpaDao = mpaDao;
-        this.directorDao = directorDao;
-        this.userStorage = userStorage;
-    }
 
     public Film addNewFilmToStorage(Film film) {
         filmStorage.addFilm(film);

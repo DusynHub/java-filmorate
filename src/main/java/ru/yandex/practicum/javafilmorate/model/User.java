@@ -18,6 +18,8 @@ import java.util.List;
 @EqualsAndHashCode
 @Builder
 public class User {
+
+
     @EqualsAndHashCode.Exclude
     private long id;
     @NotNull(message = "Email не может быть не задан")

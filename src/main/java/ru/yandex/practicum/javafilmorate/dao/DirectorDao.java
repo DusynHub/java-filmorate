@@ -20,6 +20,7 @@ import java.util.Objects;
 @Component
 @RequiredArgsConstructor
 public class DirectorDao {
+
     private final JdbcTemplate jdbcTemplate;
 
     public List<Director> getAllDirectors() {
@@ -84,6 +85,6 @@ public class DirectorDao {
     private Director makeDirector(ResultSet rs) throws SQLException {
         int id = rs.getInt("id");
         String name = rs.getString("name");
-        return new Director(id, name);
+        return Director.builder().id(id).name(name).build();
     }
 }
