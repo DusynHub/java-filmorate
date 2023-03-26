@@ -10,6 +10,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class DirectorService {
+
     private final DirectorDao directorDao;
 
     public List<Director> getAllDirectorFromDb() {

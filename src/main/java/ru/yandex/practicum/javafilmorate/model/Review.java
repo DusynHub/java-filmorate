@@ -1,9 +1,8 @@
 package ru.yandex.practicum.javafilmorate.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import javax.validation.constraints.NotNull;
@@ -15,8 +14,7 @@ import java.util.Map;
  */
 @Data
 @SuperBuilder
-@NoArgsConstructor
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class Review {
     private Long reviewId;
     @NotNull

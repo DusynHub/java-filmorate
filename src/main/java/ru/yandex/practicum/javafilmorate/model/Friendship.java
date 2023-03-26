@@ -8,6 +8,7 @@ import lombok.*;
 @EqualsAndHashCode
 @Builder
 public class Friendship {
+
     private long id;
     private long friend1Id;
     private long friend2Id;

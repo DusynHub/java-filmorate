@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 @Repository
 @RequiredArgsConstructor
 public class FeedDaoImpl implements FeedDao {
+
     private final JdbcTemplate jdbcTemplate;
 
     @Override
@@ -46,6 +47,7 @@ public class FeedDaoImpl implements FeedDao {
 
         simpleJdbcInsert.execute(feedToMap(feed));
     }
+
     @Override
     public Feed findFeedByEntityId(Long reviewId) {
         final String sql = "SELECT * FROM FEED_LIST where ENTITY_ID = ? limit 1";
@@ -63,6 +65,7 @@ public class FeedDaoImpl implements FeedDao {
             }
         }, reviewId);
     }
+
     public Map<String, Object> feedToMap(Feed feed) {
         Map<String, Object> values = new HashMap<>();
         values.put("USER_ID", feed.getUserId());

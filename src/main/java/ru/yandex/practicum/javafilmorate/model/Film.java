@@ -19,7 +19,6 @@ import java.util.List;
 @ToString
 @EqualsAndHashCode
 @Builder
-@AllArgsConstructor
 public class Film {
 
     @EqualsAndHashCode.Exclude

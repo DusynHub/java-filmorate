@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 @Component
 @RequiredArgsConstructor
 public class FilmDirectorDao {
+
     private final JdbcTemplate jdbcTemplate;
 
     public List<Director> getFilmDirector(long id) {
