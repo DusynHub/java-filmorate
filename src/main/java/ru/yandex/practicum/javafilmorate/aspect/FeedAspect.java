@@ -40,23 +40,31 @@ public class FeedAspect {
 
     @Pointcut("execution(public * ru.yandex.practicum.javafilmorate.controllers.UserController.*Friend(..))")
     private void friendControllerMethod() {
+
     }
+
     @Pointcut("execution(public * ru.yandex.practicum.javafilmorate.controllers.FilmController.likeFilm(..))")
     private void addLikeFilmControllerMethod() {
+
     }
+
     @Pointcut("execution(public * ru.yandex.practicum.javafilmorate.controllers.FilmController.deleteLikeFromFilm(..))")
     private void deleteLikeFilmControllerMethod() {
+
     }
+
     @Pointcut("execution(public * ru.yandex.practicum.javafilmorate.controllers.ReviewsController.addReview(..))")
-    private void addReview(){
+    private void addReview() {
 
     }
+
     @Pointcut("execution(public * ru.yandex.practicum.javafilmorate.controllers.ReviewsController.updateReview(..))")
-    private void updateReview(){
+    private void updateReview() {
 
     }
+
     @Pointcut("execution(public * ru.yandex.practicum.javafilmorate.controllers.ReviewsController.deleteReview(..))")
-    private void deleteReview(){
+    private void deleteReview() {
 
     }
 
