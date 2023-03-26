@@ -9,7 +9,6 @@ import java.sql.SQLException;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @EqualsAndHashCode
 @ToString
 @Builder

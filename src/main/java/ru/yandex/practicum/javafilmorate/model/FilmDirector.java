@@ -6,7 +6,6 @@ import lombok.*;
 @Setter
 @ToString
 @EqualsAndHashCode
-@AllArgsConstructor
 @Builder
 public class FilmDirector {
     private long directorId;

@@ -84,6 +84,6 @@ public class DirectorDao {
     private Director makeDirector(ResultSet rs) throws SQLException {
         int id = rs.getInt("id");
         String name = rs.getString("name");
-        return new Director(id, name);
+        return Director.builder().id(id).name(name).build();
     }
 }

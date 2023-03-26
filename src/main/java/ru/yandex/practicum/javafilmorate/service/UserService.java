@@ -1,6 +1,7 @@
 package ru.yandex.practicum.javafilmorate.service;
 
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -22,20 +23,15 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class UserService {
 
+    @Qualifier("userStorageDb")
     private final UserStorage userStorage;
     private final FriendShipDao friendShipDao;
     private final LikeDao likeDao;
     private final FilmService filmService;
 
-
-    public UserService(@Qualifier("userStorageDb") UserStorage userStorage, FriendShipDao friendShipDao, LikeDao likeDao, FilmService filmService) {
-        this.userStorage = userStorage;
-        this.friendShipDao = friendShipDao;
-        this.likeDao = likeDao;
-        this.filmService = filmService;
-    }
 
     public User addNewUserToStorage(User user) {
         setUserNameIfNeeded(user);
