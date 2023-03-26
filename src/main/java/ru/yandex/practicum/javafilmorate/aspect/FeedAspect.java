@@ -1,5 +1,6 @@
 package ru.yandex.practicum.javafilmorate.aspect;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
@@ -13,12 +14,9 @@ import ru.yandex.practicum.javafilmorate.service.FeedService;
 @Aspect
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class FeedAspect {
     private final FeedService feedService;
-
-    public FeedAspect(FeedService feedService) {
-        this.feedService = feedService;
-    }
 
     @AfterReturning(pointcut = "addLikeFilmControllerMethod() || deleteLikeFilmControllerMethod() " +
             "|| friendControllerMethod() || addReview() || updateReview()"
