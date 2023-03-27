@@ -1,4 +1,5 @@
 package ru.yandex.practicum.javafilmorate.controllers;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -18,8 +19,8 @@ public class DirectorController {
 
     @GetMapping
     public List<Director> getAllDirectors() {
-            log.info("Получен запрос GET /directors");
-            return directorService.getAllDirectorFromDb();
+        log.info("Получен запрос GET /directors");
+        return directorService.getAllDirectorFromDb();
     }
 
     @GetMapping("/{id}")

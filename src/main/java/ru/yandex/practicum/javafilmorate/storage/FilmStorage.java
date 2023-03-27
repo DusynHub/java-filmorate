@@ -20,6 +20,7 @@ public interface FilmStorage {
     boolean doesFilmExist(long id);
 
     List<Film> getMostLikedFilms(int limit);
+
     List<Film> getDirectorFilms(long id, String sortBy);
 
     List<Film> getMostPopularsFilmsByGenreByYear(int count, long genreId, int year);
