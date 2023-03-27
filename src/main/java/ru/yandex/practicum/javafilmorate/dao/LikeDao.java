@@ -41,8 +41,7 @@ public class LikeDao {
         } catch (DataIntegrityViolationException e) {
             log.debug("Фильм с id = {} или Пользователь с id = {} не найден.", filmId, userId);
             throw new EntityDoesNotExistException(
-                    String.format("Фильм с id = %d или Пользователь с id = %d не найден."
-                            , filmId, userId));
+                    String.format("Фильм с id = %d или Пользователь с id = %d не найден.", filmId, userId));
         }
 
         String sql2 = "UPDATE FILM\n" +
@@ -65,8 +64,7 @@ public class LikeDao {
         } catch (DataIntegrityViolationException e) {
             log.debug("Фильм с id = {} или Пользователь с id = {} не найден.", filmId, userId);
             throw new EntityDoesNotExistException(
-                    String.format("Фильм с id = %d или Пользователь с id = %d не найден."
-                            , filmId, userId));
+                    String.format("Фильм с id = %d или Пользователь с id = %d не найден.", filmId, userId));
         }
 
         String sql2 = "UPDATE FILM\n" +
