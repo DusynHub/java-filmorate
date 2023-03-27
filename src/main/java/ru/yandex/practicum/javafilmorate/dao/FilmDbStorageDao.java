@@ -90,14 +90,7 @@ public class FilmDbStorageDao implements FilmStorage {
                 "mpa = ?, " +
                 "rate = ? " +
                 " WHERE id = ?";
-        int updatedRows = jdbcTemplate.update(sql
-                , film.getName()
-                , film.getDescription()
-                , Date.valueOf(film.getReleaseDate())
-                , (int) film.getDuration().toSeconds()
-                , film.getMpa().getId()
-                , film.getRate()
-                , film.getId());
+        int updatedRows = jdbcTemplate.update(sql, film.getName(), film.getDescription(), Date.valueOf(film.getReleaseDate()), (int) film.getDuration().toSeconds(), film.getMpa().getId(), film.getRate(), film.getId());
         if (updatedRows == 0) {
             log.debug("Фильм с идентификатором {} не найден.", film.getId());
             throw new EntityDoesNotExistException(
