@@ -19,8 +19,7 @@ import java.util.List;
 @ToString
 @EqualsAndHashCode
 @Builder
-@AllArgsConstructor
-public class Film  {
+public class Film {
 
     @EqualsAndHashCode.Exclude
     private long id;
@@ -38,6 +37,7 @@ public class Film  {
     private Mpa mpa;
     private List<Genre> genres;
     private int likesAmount;
+    private List<Director> directors;
 
     public static Film makeFilm(ResultSet rs) throws SQLException {
         long id = rs.getLong("id");
@@ -50,14 +50,14 @@ public class Film  {
         int likesAmount = rs.getInt("LIKES_AMOUNT");
 
         return builder()
-                    .id(id)
-                    .name(name)
-                    .description(description)
-                    .releaseDate(releaseDate)
-                    .duration(duration)
-                    .rate(rate)
-                    .mpa(mpa)
-                    .likesAmount(likesAmount)
-                    .build();
+                .id(id)
+                .name(name)
+                .description(description)
+                .releaseDate(releaseDate)
+                .duration(duration)
+                .rate(rate)
+                .mpa(mpa)
+                .likesAmount(likesAmount)
+                .build();
     }
 }

@@ -18,6 +18,8 @@ import java.util.List;
 @EqualsAndHashCode
 @Builder
 public class User {
+
+
     @EqualsAndHashCode.Exclude
     private long id;
     @NotNull(message = "Email не может быть не задан")
@@ -38,7 +40,7 @@ public class User {
         String email = rs.getString("email");
         String login = rs.getString("login");
         String name = rs.getString("name");
-        LocalDate birthday =  rs.getDate("birthday").toLocalDate();
+        LocalDate birthday = rs.getDate("birthday").toLocalDate();
 
         return builder()
                 .id(id)

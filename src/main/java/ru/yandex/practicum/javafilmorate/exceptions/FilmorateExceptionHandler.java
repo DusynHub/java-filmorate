@@ -27,7 +27,7 @@ public class FilmorateExceptionHandler {
 
     @ExceptionHandler
     @ResponseStatus(code = HttpStatus.NOT_FOUND)
-    public ErrorResponse handleEntityDoesNotExistException(final EntityDoesNotExistException e ) {
+    public ErrorResponse handleEntityDoesNotExistException(final EntityDoesNotExistException e) {
 
         return new ErrorResponse(e.getMessage());
     }
