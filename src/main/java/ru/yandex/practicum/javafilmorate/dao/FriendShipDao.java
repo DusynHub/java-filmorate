@@ -85,9 +85,9 @@ public class FriendShipDao {
     }
 
     public Friendship makeFriendship(ResultSet rs) throws SQLException {
-        long friend1_id = rs.getLong("friend1_id");
-        long friend2_id = rs.getLong("friend2_id");
+        long friend1Id = rs.getLong("friend1_id");
+        long friend2Id = rs.getLong("friend2_id");
 
-        return Friendship.builder().friend1Id(friend1_id).friend2Id(friend2_id).build();
+        return Friendship.builder().friend1Id(friend1Id).friend2Id(friend2Id).build();
     }
 }
